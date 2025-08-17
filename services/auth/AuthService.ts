@@ -1,11 +1,10 @@
 export interface Credentials {
-  username: string;
+  email: string;
   password: string;
 }
 
-export interface User {
-  id: string;
-  username: string;
+export interface AuthResponse {
+  token: string;
 }
 
 /**
@@ -14,18 +13,31 @@ export interface User {
  * networking library. Here we simply mock the behaviour.
  */
 export class AuthService {
-  async signIn({ username, password }: Credentials): Promise<User> {
-    // mock sign in
-    return { id: '1', username };
+  async signIn({ email, password }: Credentials): Promise<AuthResponse> {
+    const res = await fetch('https://coffe-subcription-3w.onrender.com/api/Auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to sign in');
+    }
+
+    const json = await res.json();
+    if (!json?.data?.token) {
+      throw new Error('Token not found');
+    }
+
+    return { token: json.data.token };
   }
 
-  async signUp({ username, password }: Credentials): Promise<User> {
-    // mock sign up
-    return { id: '1', username };
+  async signUp({ email, password }: Credentials): Promise<AuthResponse> {
+    // sign up not implemented; return empty token
+    return { token: '' };
   }
 
   async signOut(): Promise<void> {
-    // mock sign out
     return;
   }
 }

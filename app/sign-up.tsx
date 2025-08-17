@@ -5,19 +5,19 @@ import { AuthFacade } from '@/facades/AuthFacade';
 const auth = new AuthFacade();
 
 export default function SignUp() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSignUp = async () => {
-    await auth.signUp({ username, password });
+    await auth.signUp({ email, password });
   };
 
   return (
     <View style={styles.container}>
       <TextInput
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
         style={styles.input}
       />
       <TextInput

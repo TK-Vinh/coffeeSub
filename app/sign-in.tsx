@@ -1,23 +1,29 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { AuthFacade } from '@/facades/AuthFacade';
 
 const auth = new AuthFacade();
 
 export default function SignIn() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSignIn = async () => {
-    await auth.signIn({ username, password });
+    try {
+      const { token } = await auth.signIn({ email, password });
+      Alert.alert('Signed in', token);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : String(e);
+      Alert.alert('Error', message);
+    }
   };
 
   return (
     <View style={styles.container}>
       <TextInput
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
         style={styles.input}
       />
       <TextInput
