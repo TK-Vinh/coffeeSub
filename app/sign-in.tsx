@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { useRouter } from 'expo-router';
 import { AuthFacade } from '@/facades/AuthFacade';
 
 const auth = new AuthFacade();
 
 export default function SignIn() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -12,6 +14,7 @@ export default function SignIn() {
     try {
       const { token } = await auth.signIn({ email, password });
       Alert.alert('Signed in', token);
+      router.replace('/(tabs)');
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
       Alert.alert('Error', message);
