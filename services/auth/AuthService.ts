@@ -12,9 +12,15 @@ export interface AuthResponse {
  * In a real application these methods would use `fetch` or another
  * networking library. Here we simply mock the behaviour.
  */
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
+
 export class AuthService {
   async signIn({ email, password }: Credentials): Promise<AuthResponse> {
-    const res = await fetch('https://coffe-subcription-3w.onrender.com/api/Auth/login', {
+    if (!API_URL) {
+      throw new Error('Missing API URL');
+    }
+
+    const res = await fetch(`${API_URL}/Auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
