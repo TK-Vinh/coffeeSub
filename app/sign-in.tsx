@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextInput, Button, StyleSheet } from 'react-native';
+import { TextInput, Button, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 // eslint-disable-next-line import/no-unresolved
 import { Toast } from 'toastify-react-native';
@@ -48,6 +48,10 @@ export default function SignIn() {
         placeholderTextColor={borderColor}
       />
       <Button title="Sign In" onPress={handleSignIn} />
+      <View style={styles.separator}>
+        <Text style={[styles.separatorText, { color: textColor }]}>If you don&apos;t have an account</Text>
+        <Button title="Sign Up" onPress={() => router.replace('/sign-up')} />
+      </View>
     </ThemedView>
   );
 }
@@ -55,4 +59,6 @@ export default function SignIn() {
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 16 },
   input: { borderWidth: 1, marginBottom: 12, padding: 8 },
+  separator: { marginTop: 16, alignItems: 'center' },
+  separatorText: { marginBottom: 8 },
 });

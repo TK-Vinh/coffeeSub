@@ -17,9 +17,4 @@ export class AuthProxy {
     console.log('AuthProxy: signUp called');
     return this.service.signUp(credentials);
   }
-
-  async signOut(): Promise<void> {
-    console.log('AuthProxy: signOut called');
-    return this.service.signOut();
-  }
 }

@@ -4,7 +4,6 @@ interface AuthContextValue {
   token: string | null;
   email: string | null;
   signIn: (token: string, email: string) => void;
-  signOut: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -18,13 +17,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setEmail(newEmail);
   };
 
-  const signOut = () => {
-    setToken(null);
-    setEmail(null);
-  };
-
   return (
-    <AuthContext.Provider value={{ token, email, signIn, signOut }}>
+    <AuthContext.Provider value={{ token, email, signIn }}>
       {children}
     </AuthContext.Provider>
   );
