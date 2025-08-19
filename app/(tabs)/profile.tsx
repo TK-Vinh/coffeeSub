@@ -1,15 +1,20 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { Button, StyleSheet, Switch } from 'react-native';
 import { useRouter } from 'expo-router';
 import { AuthFacade } from '@/facades/AuthFacade';
 import { useAuth } from '@/hooks/useAuth';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/ThemedText';
+import { useColorScheme, useToggleColorScheme } from '@/hooks/useColorScheme';
 
 const auth = new AuthFacade();
 
 export default function Profile() {
   const router = useRouter();
   const { token, email, signOut } = useAuth();
+  const colorScheme = useColorScheme();
+  const toggleScheme = useToggleColorScheme();
 
   const handleSignOut = async () => {
     await auth.signOut();
@@ -18,16 +23,23 @@ export default function Profile() {
   };
 
   return (
-    <View style={styles.container}>
-      {email && <Text style={styles.info}>{email}</Text>}
+    <ThemedView style={styles.container}>
+      {email && <ThemedText style={styles.info}>{email}</ThemedText>}
       {token && (
-        <View style={styles.qrContainer}>
-          <IconSymbol size={200} name="qrcode" color="black" />
-          <Text selectable style={styles.code}>{token}</Text>
-        </View>
+        <ThemedView style={styles.qrContainer}>
+          <IconSymbol
+            size={200}
+            name="qrcode"
+            color={colorScheme === 'dark' ? 'white' : 'black'}
+          />
+          <ThemedText selectable style={styles.code}>
+            {token}
+          </ThemedText>
+        </ThemedView>
       )}
+      <Switch value={colorScheme === 'dark'} onValueChange={toggleScheme} />
       <Button title="Sign Out" onPress={handleSignOut} />
-    </View>
+    </ThemedView>
   );
 }
 

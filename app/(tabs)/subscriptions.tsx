@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { Button, StyleSheet } from 'react-native';
 import { SubscriptionFacade } from '@/facades/SubscriptionFacade';
 import { Plan } from '@/factories/PlanFactory';
+import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/ThemedText';
 
 const facade = new SubscriptionFacade();
 
@@ -13,17 +15,17 @@ export default function Subscriptions() {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <ThemedView style={styles.container}>
       {plans.map((plan) => (
-        <View key={plan.id} style={styles.plan}>
-          <Text>{`${plan.name} - $${plan.price}`}</Text>
+        <ThemedView key={plan.id} style={styles.plan}>
+          <ThemedText>{`${plan.name} - $${plan.price}`}</ThemedText>
           <Button
             title="Buy"
             onPress={() => facade.purchase(plan.id as 'basic' | 'premium', '1')}
           />
-        </View>
+        </ThemedView>
       ))}
-    </View>
+    </ThemedView>
   );
 }
 

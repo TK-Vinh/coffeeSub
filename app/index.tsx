@@ -1,23 +1,27 @@
 import React from 'react';
-import { View, Button, StyleSheet, Pressable, Text } from 'react-native';
+import { Button, StyleSheet, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
+import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/ThemedText';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function Welcome() {
   const router = useRouter();
 
+  const tint = useThemeColor({}, 'tint');
   return (
-    <View style={styles.container}>
+    <ThemedView style={styles.container}>
       <Button title="Sign In" onPress={() => router.push('/sign-in')} />
       <Button title="Sign Up" onPress={() => router.push('/sign-up')} />
       <Pressable onPress={() => router.replace('/(tabs)')} style={styles.guest}>
-        <Text style={styles.guestText}>Try as guest</Text>
+        <ThemedText style={[styles.guestText, { color: tint }]}>Try as guest</ThemedText>
       </Pressable>
-    </View>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 16, gap: 12 },
   guest: { marginTop: 16 },
-  guestText: { color: '#007aff', textAlign: 'center' },
+  guestText: { textAlign: 'center' },
 });

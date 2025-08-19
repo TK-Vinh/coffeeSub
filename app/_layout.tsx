@@ -4,13 +4,12 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { ColorSchemeProvider, useColorScheme } from '@/hooks/useColorScheme';
 import { AuthProvider } from '@/hooks/useAuth';
 // eslint-disable-next-line import/no-unresolved
 import ToastManager from 'toastify-react-native';
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -19,6 +18,16 @@ export default function RootLayout() {
     // Async font loading only occurs in development.
     return null;
   }
+
+  return (
+    <ColorSchemeProvider>
+      <RootNavigation />
+    </ColorSchemeProvider>
+  );
+}
+
+function RootNavigation() {
+  const colorScheme = useColorScheme();
 
   return (
     <AuthProvider>
