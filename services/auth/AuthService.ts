@@ -42,8 +42,4 @@ export class AuthService {
     // sign up not implemented; return empty token
     return { token: '' };
   }
-
-  async signOut(): Promise<void> {
-    return;
-  }
 }
