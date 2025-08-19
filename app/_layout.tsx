@@ -4,10 +4,12 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { ColorSchemeProvider, useColorScheme } from '@/hooks/useColorScheme';
+import { AuthProvider } from '@/hooks/useAuth';
+// eslint-disable-next-line import/no-unresolved
+import ToastManager from 'toastify-react-native';
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -18,12 +20,28 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <ColorSchemeProvider>
+      <RootNavigation />
+    </ColorSchemeProvider>
+  );
+}
+
+function RootNavigation() {
+  const colorScheme = useColorScheme();
+
+  return (
+    <AuthProvider>
+      <ToastManager />
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="sign-in" options={{ title: 'Sign In' }} />
+          <Stack.Screen name="sign-up" options={{ title: 'Sign Up' }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style="auto" />
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
