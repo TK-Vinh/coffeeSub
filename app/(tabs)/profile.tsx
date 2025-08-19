@@ -16,10 +16,14 @@ export default function Profile() {
   const colorScheme = useColorScheme();
   const toggleScheme = useToggleColorScheme();
 
-  const handleSignOut = async () => {
-    await auth.signOut();
-    signOut();
-    router.replace('/');
+  const handleAction = async () => {
+    if (token) {
+      await auth.signOut();
+      signOut();
+      router.replace('/');
+    } else {
+      router.push('/sign-in');
+    }
   };
 
   return (
@@ -38,7 +42,7 @@ export default function Profile() {
         </ThemedView>
       )}
       <Switch value={colorScheme === 'dark'} onValueChange={toggleScheme} />
-      <Button title="Sign Out" onPress={handleSignOut} />
+      <Button title={token ? 'Sign Out' : 'Sign In'} onPress={handleAction} />
     </ThemedView>
   );
 }
