@@ -6,6 +6,8 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { AuthProvider } from '@/hooks/useAuth';
+// eslint-disable-next-line import/no-unresolved
+import ToastManager from 'toastify-react-native';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -20,6 +22,7 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
+      <ToastManager />
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />

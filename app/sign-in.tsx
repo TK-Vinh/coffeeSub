@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, TextInput, Button, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+// eslint-disable-next-line import/no-unresolved
+import { Toast } from 'toastify-react-native';
 import { AuthFacade } from '@/facades/AuthFacade';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -16,11 +18,11 @@ export default function SignIn() {
     try {
       const { token } = await auth.signIn({ email, password });
       setAuth(token, email);
-      Alert.alert('Signed in', token);
+      Toast.success('Signed in successfully');
       router.replace('/(tabs)');
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
-      Alert.alert('Error', message);
+      Toast.error(message);
     }
   };
 
