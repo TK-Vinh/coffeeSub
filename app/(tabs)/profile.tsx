@@ -1,29 +1,20 @@
 import React from 'react';
 import { Button, StyleSheet, Switch } from 'react-native';
 import { useRouter } from 'expo-router';
-import { AuthFacade } from '@/facades/AuthFacade';
 import { useAuth } from '@/hooks/useAuth';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme, useToggleColorScheme } from '@/hooks/useColorScheme';
 
-const auth = new AuthFacade();
-
 export default function Profile() {
   const router = useRouter();
-  const { token, email, signOut } = useAuth();
+  const { token, email } = useAuth();
   const colorScheme = useColorScheme();
   const toggleScheme = useToggleColorScheme();
 
-  const handleAction = async () => {
-    if (token) {
-      await auth.signOut();
-      signOut();
-      router.replace('/');
-    } else {
-      router.push('/sign-in');
-    }
+  const handleSignIn = () => {
+    router.replace('/sign-in');
   };
 
   return (
@@ -42,7 +33,7 @@ export default function Profile() {
         </ThemedView>
       )}
       <Switch value={colorScheme === 'dark'} onValueChange={toggleScheme} />
-      <Button title={token ? 'Sign Out' : 'Sign In'} onPress={handleAction} />
+      {!token && <Button title="Sign In" onPress={handleSignIn} />}
     </ThemedView>
   );
 }

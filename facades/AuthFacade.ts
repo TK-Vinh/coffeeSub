@@ -14,8 +14,4 @@ export class AuthFacade {
   signUp(credentials: Credentials): Promise<AuthResponse> {
     return this.proxy.signUp(credentials);
   }
-
-  signOut(): Promise<void> {
-    return this.proxy.signOut();
-  }
 }
