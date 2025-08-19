@@ -1,9 +1,9 @@
-import React from 'react';
-import { Image, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import type { CoffeeItem } from '@/services/coffee/CoffeeItemService';
+import React from 'react';
+import { Image, StyleSheet } from 'react-native';
 
 interface Props {
   item: CoffeeItem;
@@ -42,4 +42,3 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
 });
-

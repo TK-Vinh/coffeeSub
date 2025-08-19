@@ -4,9 +4,9 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
-import { ColorSchemeProvider, useColorScheme } from '@/hooks/useColorScheme';
 import { AuthProvider } from '@/hooks/useAuth';
-// eslint-disable-next-line import/no-unresolved
+import { ColorSchemeProvider, useColorScheme } from '@/hooks/useColorScheme';
+ 
 import ToastManager from 'toastify-react-native';
 
 export default function RootLayout() {
