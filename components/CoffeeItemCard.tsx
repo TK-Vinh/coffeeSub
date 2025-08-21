@@ -1,38 +1,42 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
-import { Card, Text } from 'react-native-paper';
-import { useRouter } from 'expo-router';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import type { CoffeeItem } from '@/services/coffee/CoffeeItemService';
+import React from 'react';
+import { Image, StyleSheet } from 'react-native';
 
 interface Props {
   item: CoffeeItem;
 }
 
 export function CoffeeItemCard({ item }: Props) {
-  const router = useRouter();
-  const handlePress = () => router.push(`/coffee/${item.coffeeId}`);
-
+  const borderColor = useThemeColor({}, 'icon');
+  const backgroundColor = useThemeColor({}, 'background');
   return (
-    <Card style={styles.card} onPress={handlePress}>
-      {item.imageUrl ? <Card.Cover source={{ uri: item.imageUrl }} style={styles.cover} /> : null}
-      <Card.Content>
-        <Text variant="titleMedium" style={styles.title}>
-          {item.coffeeName}
-        </Text>
-        <Text variant="bodyMedium">{item.description}</Text>
-      </Card.Content>
-    </Card>
+    <ThemedView style={[styles.card, { borderColor, backgroundColor }]}>
+      {item.imageUrl ? (
+        <Image source={{ uri: item.imageUrl }} style={styles.image} />
+      ) : null}
+      <ThemedText type="defaultSemiBold" style={styles.title}>
+        {item.coffeeName}
+      </ThemedText>
+      <ThemedText>{item.description}</ThemedText>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    width: 200,
-    marginRight: 16,
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
     marginBottom: 16,
   },
-  cover: {
+  image: {
+    width: '100%',
     height: 160,
+    borderRadius: 4,
+    marginBottom: 8,
   },
   title: {
     marginBottom: 4,

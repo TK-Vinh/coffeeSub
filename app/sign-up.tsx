@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Alert, View } from 'react-native';
-import { Button, Text, TextInput } from 'react-native-paper';
+import { TextInput, Button, StyleSheet, Alert, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { AuthFacade } from '@/facades/AuthFacade';
 import { ThemedView } from '@/components/ThemedView';
@@ -19,30 +18,29 @@ export default function SignUp() {
     router.replace('/sign-in');
   };
 
+  const borderColor = useThemeColor({}, 'icon');
   const textColor = useThemeColor({}, 'text');
   return (
     <ThemedView style={styles.container}>
       <TextInput
-        label="Email"
+        placeholder="Email"
         value={email}
         onChangeText={setEmail}
-        mode="outlined"
-        style={styles.input}
+        style={[styles.input, { borderColor, color: textColor }]}
+        placeholderTextColor={borderColor}
       />
       <TextInput
-        label="Password"
+        placeholder="Password"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
-        mode="outlined"
-        style={styles.input}
+        style={[styles.input, { borderColor, color: textColor }]}
+        placeholderTextColor={borderColor}
       />
-      <Button mode="contained" onPress={handleSignUp} style={styles.button}>
-        Sign Up
-      </Button>
+      <Button title="Sign Up" onPress={handleSignUp} />
       <View style={styles.separator}>
         <Text style={[styles.separatorText, { color: textColor }]}>If you already have one</Text>
-        <Button onPress={() => router.replace('/sign-in')}>Sign In</Button>
+        <Button title="Sign In" onPress={() => router.replace('/sign-in')} />
       </View>
     </ThemedView>
   );
@@ -50,8 +48,7 @@ export default function SignUp() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 16 },
-  input: { marginBottom: 12 },
-  button: { marginTop: 4 },
-  separator: { marginTop: 24, alignItems: 'center' },
+  input: { borderWidth: 1, marginBottom: 12, padding: 8 },
+  separator: { marginTop: 16, alignItems: 'center' },
   separatorText: { marginBottom: 8 },
 });
