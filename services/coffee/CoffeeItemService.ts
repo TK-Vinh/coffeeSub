@@ -21,7 +21,7 @@ export class CoffeeItemService {
       throw new Error('Failed to fetch coffee items');
     }
 
-    return res.json();
+    const json = await res.json();
+    return json.data ?? json;
   }
 }
-
