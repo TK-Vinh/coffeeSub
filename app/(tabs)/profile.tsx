@@ -1,34 +1,41 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, StyleSheet, Switch } from 'react-native';
 import { useRouter } from 'expo-router';
-import { AuthFacade } from '@/facades/AuthFacade';
 import { useAuth } from '@/hooks/useAuth';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme, useToggleColorScheme } from '@/hooks/useColorScheme';
+import { AuthFacade, User } from '@/facades/AuthFacade';
 
 const auth = new AuthFacade();
 
 export default function Profile() {
   const router = useRouter();
-  const { token, email, signOut } = useAuth();
+  const { token, email } = useAuth();
   const colorScheme = useColorScheme();
   const toggleScheme = useToggleColorScheme();
+  const [user, setUser] = useState<User | null>(null);
 
-  const handleAction = async () => {
-    if (token) {
-      await auth.signOut();
-      signOut();
-      router.replace('/');
-    } else {
-      router.push('/sign-in');
-    }
+  useEffect(() => {
+    if (!token) return;
+    auth
+      .currentUser(token)
+      .then(setUser)
+      .catch((e) => console.error(e));
+  }, [token]);
+
+  const handleSignIn = () => {
+    router.replace('/sign-in');
   };
 
   return (
     <ThemedView style={styles.container}>
-      {email && <ThemedText style={styles.info}>{email}</ThemedText>}
+      {user ? (
+        <ThemedText style={styles.info}>{user.fullName}</ThemedText>
+      ) : (
+        email && <ThemedText style={styles.info}>{email}</ThemedText>
+      )}
       {token && (
         <ThemedView style={styles.qrContainer}>
           <IconSymbol
@@ -36,13 +43,11 @@ export default function Profile() {
             name="qrcode"
             color={colorScheme === 'dark' ? 'white' : 'black'}
           />
-          <ThemedText selectable style={styles.code}>
-            {token}
-          </ThemedText>
+          <ThemedText selectable style={styles.code}>{token}</ThemedText>
         </ThemedView>
       )}
       <Switch value={colorScheme === 'dark'} onValueChange={toggleScheme} />
-      <Button title={token ? 'Sign Out' : 'Sign In'} onPress={handleAction} />
+      {!token && <Button title="Sign In" onPress={handleSignIn} />}
     </ThemedView>
   );
 }
