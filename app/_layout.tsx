@@ -39,6 +39,7 @@ function RootNavigation() {
             <Stack.Screen name="sign-up" options={{ title: 'Sign Up' }} />
             <Stack.Screen name="coffee/[id]" options={{ title: 'Coffee Detail' }} />
             <Stack.Screen name="plan/[id]" options={{ title: 'Plan Detail' }} />
+            <Stack.Screen name="vnpay" options={{ title: 'VNPAY' }} />
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
           </Stack>

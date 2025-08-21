@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { ActivityIndicator, Button, Card, Text } from 'react-native-paper';
-import { useLocalSearchParams } from 'expo-router';
-import { WebView } from 'react-native-webview';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { ThemedView } from '@/components/ThemedView';
 import { Plan } from '@/factories/PlanFactory';
@@ -15,9 +14,9 @@ export default function PlanDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [plan, setPlan] = useState<Plan | null>(null);
   const [loading, setLoading] = useState(true);
-  const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const { userId } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     if (!id) return;
@@ -44,20 +43,12 @@ export default function PlanDetail() {
     );
   }
 
-  if (paymentUrl) {
-    return (
-      <ThemedView style={styles.container}>
-        <WebView source={{ uri: paymentUrl }} style={{ flex: 1 }} />
-      </ThemedView>
-    );
-  }
-
   const handleSubscribe = async () => {
     if (!userId) return;
     try {
       setSubmitting(true);
       const url = await facade.createPaymentUrl(Number(id), userId);
-      setPaymentUrl(url);
+      router.push({ pathname: '/vnpay', params: { url } });
     } catch (e) {
       console.error(e);
     } finally {
