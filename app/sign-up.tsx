@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { StyleSheet, Alert, View } from 'react-native';
+import { Button, Text, TextInput } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import { AuthFacade } from '@/facades/AuthFacade';
 import { ThemedView } from '@/components/ThemedView';
@@ -18,31 +19,39 @@ export default function SignUp() {
     router.replace('/sign-in');
   };
 
-  const borderColor = useThemeColor({}, 'icon');
   const textColor = useThemeColor({}, 'text');
   return (
     <ThemedView style={styles.container}>
       <TextInput
-        placeholder="Email"
+        label="Email"
         value={email}
         onChangeText={setEmail}
-        style={[styles.input, { borderColor, color: textColor }]}
-        placeholderTextColor={borderColor}
+        mode="outlined"
+        style={styles.input}
       />
       <TextInput
-        placeholder="Password"
+        label="Password"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
-        style={[styles.input, { borderColor, color: textColor }]}
-        placeholderTextColor={borderColor}
+        mode="outlined"
+        style={styles.input}
       />
-      <Button title="Sign Up" onPress={handleSignUp} />
+      <Button mode="contained" onPress={handleSignUp} style={styles.button}>
+        Sign Up
+      </Button>
+      <View style={styles.separator}>
+        <Text style={[styles.separatorText, { color: textColor }]}>If you already have one</Text>
+        <Button onPress={() => router.replace('/sign-in')}>Sign In</Button>
+      </View>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 16 },
-  input: { borderWidth: 1, marginBottom: 12, padding: 8 },
+  input: { marginBottom: 12 },
+  button: { marginTop: 4 },
+  separator: { marginTop: 24, alignItems: 'center' },
+  separatorText: { marginBottom: 8 },
 });
