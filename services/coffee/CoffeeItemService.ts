@@ -24,4 +24,18 @@ export class CoffeeItemService {
     const json = await res.json();
     return json.data ?? json;
   }
+
+  async get(id: number): Promise<CoffeeItem> {
+    if (!API_URL) {
+      throw new Error('Missing API URL');
+    }
+
+    const res = await fetch(`${API_URL}/CoffeeItem/${id}`);
+    if (!res.ok) {
+      throw new Error('Failed to fetch coffee item');
+    }
+
+    const json = await res.json();
+    return json.data ?? json;
+  }
 }

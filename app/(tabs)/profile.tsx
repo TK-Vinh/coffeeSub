@@ -35,7 +35,6 @@ export default function Profile() {
           <Card.Title title={user.fullName} subtitle={user.email} />
           <Card.Content>
             <List.Section>
-              <List.Item title="ID" description={`${user.id}`} />
               <List.Item title="Username" description={user.username} />
               <List.Item title="Phone" description={user.phoneNumber} />
               <List.Item title="Role" description={user.role} />

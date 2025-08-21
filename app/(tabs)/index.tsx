@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { SectionList, StyleSheet } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import { ActivityIndicator, List } from 'react-native-paper';
 import { ThemedView } from '@/components/ThemedView';
 import { CoffeeItemCard } from '@/components/CoffeeItemCard';
 import { CoffeeItem, CoffeeItemService } from '@/services/coffee/CoffeeItemService';
 import { CategoryService } from '@/services/coffee/CategoryService';
 
-type Section = {
+type Category = {
   title: string;
   data: CoffeeItem[];
 };
 
 export default function Home() {
-  const [sections, setSections] = useState<Section[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export default function Home() {
           title: c.categoryName,
           data: itemArray.filter((i) => i.categoryId === c.categoryId),
         }));
-        setSections(grouped);
+        setCategories(grouped);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -41,13 +41,21 @@ export default function Home() {
   }
 
   return (
-    <SectionList
+    <FlatList
       contentContainerStyle={styles.container}
-      sections={sections}
-      keyExtractor={(item) => item.coffeeId.toString()}
-      renderItem={({ item }) => <CoffeeItemCard item={item} />}
-      renderSectionHeader={({ section: { title } }) => (
-        <List.Subheader style={styles.sectionTitle}>{title}</List.Subheader>
+      data={categories}
+      keyExtractor={(item) => item.title}
+      renderItem={({ item }) => (
+        <View style={styles.category}>
+          <List.Subheader style={styles.sectionTitle}>{item.title}</List.Subheader>
+          <FlatList
+            data={item.data}
+            horizontal
+            keyExtractor={(c) => c.coffeeId.toString()}
+            renderItem={({ item: coffee }) => <CoffeeItemCard item={coffee} />}
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
       )}
     />
   );
@@ -56,5 +64,6 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: { padding: 16 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  sectionTitle: { marginTop: 16 },
+  sectionTitle: { marginBottom: 8 },
+  category: { marginBottom: 24 },
 });
