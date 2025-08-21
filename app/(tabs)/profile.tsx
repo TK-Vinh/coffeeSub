@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Button, StyleSheet, Switch } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
-import { IconSymbol } from '@/components/ui/IconSymbol';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme, useToggleColorScheme } from '@/hooks/useColorScheme';
@@ -32,19 +31,22 @@ export default function Profile() {
   return (
     <ThemedView style={styles.container}>
       {user ? (
-        <ThemedText style={styles.info}>{user.fullName}</ThemedText>
+        <>
+          <ThemedText style={styles.info}>ID: {user.id}</ThemedText>
+          <ThemedText style={styles.info}>Username: {user.username}</ThemedText>
+          <ThemedText style={styles.info}>Full name: {user.fullName}</ThemedText>
+          <ThemedText style={styles.info}>Email: {user.email}</ThemedText>
+          <ThemedText style={styles.info}>Phone: {user.phoneNumber}</ThemedText>
+          <ThemedText style={styles.info}>Role: {user.role}</ThemedText>
+          <ThemedText style={styles.info}>
+            Plan ID: {user.userSubscriptions.planId}
+          </ThemedText>
+          <ThemedText style={styles.info}>
+            Remaining Cups: {user.userSubscriptions.remainingCups}
+          </ThemedText>
+        </>
       ) : (
         email && <ThemedText style={styles.info}>{email}</ThemedText>
-      )}
-      {token && (
-        <ThemedView style={styles.qrContainer}>
-          <IconSymbol
-            size={200}
-            name="qrcode"
-            color={colorScheme === 'dark' ? 'white' : 'black'}
-          />
-          <ThemedText selectable style={styles.code}>{token}</ThemedText>
-        </ThemedView>
       )}
       <Switch value={colorScheme === 'dark'} onValueChange={toggleScheme} />
       {!token && <Button title="Sign In" onPress={handleSignIn} />}
@@ -54,7 +56,5 @@ export default function Profile() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 16 },
-  info: { marginBottom: 24 },
-  qrContainer: { alignItems: 'center', marginBottom: 24 },
-  code: { marginTop: 8, fontSize: 12, textAlign: 'center' },
+  info: { marginBottom: 8 },
 });
