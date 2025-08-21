@@ -30,4 +30,21 @@ export class PlanService {
     const json = await res.json();
     return json.data ?? json;
   }
+
+  async createPaymentUrl(planId: number, userId: number): Promise<string> {
+    if (!API_URL) {
+      throw new Error('Missing API URL');
+    }
+
+    const res = await fetch(
+      `${API_URL}/Vnpay/CreatePaymentUrl?planId=${planId}&userId=${userId}`,
+    );
+    if (!res.ok) {
+      throw new Error('Failed to create payment url');
+    }
+
+    // API returns the payment URL as plain text
+    const url = await res.text();
+    return url;
+  }
 }

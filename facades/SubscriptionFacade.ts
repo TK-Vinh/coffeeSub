@@ -12,4 +12,8 @@ export class SubscriptionFacade {
   async getPlan(id: number): Promise<Plan> {
     return this.service.fetchPlan(id);
   }
+
+  async createPaymentUrl(planId: number, userId: number): Promise<string> {
+    return this.service.createPaymentUrl(planId, userId);
+  }
 }
