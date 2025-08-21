@@ -8,4 +8,8 @@ export class SubscriptionFacade {
   async getPlans(): Promise<Plan[]> {
     return this.service.fetchPlans();
   }
+
+  async getPlan(id: number): Promise<Plan> {
+    return this.service.fetchPlan(id);
+  }
 }

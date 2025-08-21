@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { Button, Card, List, Switch, Text } from 'react-native-paper';
+import { Appbar, Button, Card, List, Text } from 'react-native-paper';
 import { useRouter } from 'expo-router';
+import { MaterialIcons } from '@expo/vector-icons';
+
 import { useAuth } from '@/hooks/useAuth';
 import { ThemedView } from '@/components/ThemedView';
 import { useColorScheme, useToggleColorScheme } from '@/hooks/useColorScheme';
@@ -30,6 +32,19 @@ export default function Profile() {
 
   return (
     <ThemedView style={styles.container}>
+      <Appbar.Header>
+        <Appbar.Content title="Profile" />
+        <Appbar.Action
+          icon={() => (
+            <MaterialIcons
+              name={colorScheme === 'dark' ? 'light-mode' : 'dark-mode'}
+              size={24}
+              color="black"
+            />
+          )}
+          onPress={toggleScheme}
+        />
+      </Appbar.Header>
       {user ? (
         <Card style={styles.card}>
           <Card.Title title={user.fullName} subtitle={user.email} />
@@ -38,7 +53,6 @@ export default function Profile() {
               <List.Item title="Username" description={user.username} />
               <List.Item title="Phone" description={user.phoneNumber} />
               <List.Item title="Role" description={user.role} />
-              <List.Item title="Plan ID" description={`${user.userSubscriptions.planId}`} />
               <List.Item title="Remaining Cups" description={`${user.userSubscriptions.remainingCups}`} />
             </List.Section>
           </Card.Content>
@@ -46,7 +60,6 @@ export default function Profile() {
       ) : (
         email && <Text style={styles.info}>{email}</Text>
       )}
-      <Switch style={styles.switch} value={colorScheme === 'dark'} onValueChange={toggleScheme} />
       {!token && (
         <Button mode="contained" onPress={handleSignIn} style={styles.signInButton}>
           Sign In
@@ -57,9 +70,8 @@ export default function Profile() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 16 },
-  info: { marginBottom: 8 },
-  card: { width: '100%', marginBottom: 16 },
-  switch: { marginVertical: 16 },
-  signInButton: { marginTop: 8 },
+  container: { flex: 1 },
+  info: { marginBottom: 8, padding: 16 },
+  card: { margin: 16 },
+  signInButton: { marginHorizontal: 16, marginTop: 8 },
 });

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
-import { ActivityIndicator, Card, Text } from 'react-native-paper';
+import { Image, ScrollView, StyleSheet } from 'react-native';
+import { ActivityIndicator, Button, Text } from 'react-native-paper';
 import { useLocalSearchParams } from 'expo-router';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -38,21 +38,29 @@ export default function CoffeeDetail() {
   }
 
   return (
-    <ThemedView style={styles.container}>
-      <Card>
-        {item.imageUrl ? <Card.Cover source={{ uri: item.imageUrl }} /> : null}
-        <Card.Title title={item.coffeeName} />
-        <Card.Content>
-          <Text>{item.description}</Text>
-          <Text>Code: {item.code}</Text>
-        </Card.Content>
-      </Card>
+    <ThemedView style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={styles.container}>
+        {item.imageUrl ? <Image source={{ uri: item.imageUrl }} style={styles.image} /> : null}
+        <Text variant="headlineSmall" style={styles.title}>
+          {item.coffeeName}
+        </Text>
+        <Text style={styles.description}>{item.description}</Text>
+        <Text style={styles.code}>Code: {item.code}</Text>
+        <Button mode="contained" style={styles.button}>
+          Sử dụng ngay
+        </Button>
+      </ScrollView>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
+  container: { padding: 16 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  image: { width: '100%', height: 200, marginBottom: 16 },
+  title: { marginBottom: 8 },
+  description: { marginBottom: 8 },
+  code: { marginBottom: 16, color: '#666' },
+  button: { marginTop: 8 },
 });
 

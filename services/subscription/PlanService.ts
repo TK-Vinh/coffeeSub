@@ -16,4 +16,18 @@ export class PlanService {
     const json = await res.json();
     return json.data ?? json;
   }
+
+  async fetchPlan(id: number): Promise<Plan> {
+    if (!API_URL) {
+      throw new Error('Missing API URL');
+    }
+
+    const res = await fetch(`${API_URL}/SubscriptionPlan/${id}`);
+    if (!res.ok) {
+      throw new Error('Failed to fetch subscription plan');
+    }
+
+    const json = await res.json();
+    return json.data ?? json;
+  }
 }
