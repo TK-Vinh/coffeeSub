@@ -1,4 +1,4 @@
-import { AuthService, Credentials, AuthResponse } from './AuthService';
+import { AuthService, Credentials, AuthResponse, User } from './AuthService';
 
 /**
  * Proxy that can be used to attach headers, tokens or logging
@@ -16,5 +16,10 @@ export class AuthProxy {
   async signUp(credentials: Credentials): Promise<AuthResponse> {
     console.log('AuthProxy: signUp called');
     return this.service.signUp(credentials);
+  }
+
+  async currentUser(token: string): Promise<User> {
+    console.log('AuthProxy: currentUser called');
+    return this.service.currentUser(token);
   }
 }
