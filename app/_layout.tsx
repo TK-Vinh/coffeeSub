@@ -6,9 +6,8 @@ import 'react-native-reanimated';
 
 import { AuthProvider } from '@/hooks/useAuth';
 import { ColorSchemeProvider, useColorScheme } from '@/hooks/useColorScheme';
-
+ 
 import ToastManager from 'toastify-react-native';
-import { Provider as PaperProvider } from 'react-native-paper';
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -32,21 +31,17 @@ function RootNavigation() {
 
   return (
     <AuthProvider>
-      <PaperProvider>
-        <ToastManager />
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <Stack>
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="sign-in" options={{ title: 'Sign In' }} />
-            <Stack.Screen name="sign-up" options={{ title: 'Sign Up' }} />
-            <Stack.Screen name="coffee/[id]" options={{ title: 'Coffee Detail' }} />
-            <Stack.Screen name="plan/[id]" options={{ title: 'Plan Detail' }} />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-          <StatusBar style="auto" />
-        </ThemeProvider>
-      </PaperProvider>
+      <ToastManager />
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="sign-in" options={{ title: 'Sign In' }} />
+          <Stack.Screen name="sign-up" options={{ title: 'Sign Up' }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style="auto" />
+      </ThemeProvider>
     </AuthProvider>
   );
 }
