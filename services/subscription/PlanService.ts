@@ -1,19 +1,19 @@
 import { Plan } from '@/factories/PlanFactory';
 
-/**
- * Service that would normally fetch plans from API and manage purchases.
- */
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
+
 export class PlanService {
   async fetchPlans(): Promise<Plan[]> {
-    // mock plan list
-    return [
-      { id: 'basic', name: 'Basic Plan', price: 10, totalCups: 10 },
-      { id: 'premium', name: 'Premium Plan', price: 20, totalCups: 25 },
-    ];
-  }
+    if (!API_URL) {
+      throw new Error('Missing API URL');
+    }
 
-  async purchasePlan(planId: string, userId: string): Promise<void> {
-    console.log(`Purchasing plan ${planId} for user ${userId}`);
-    return;
+    const res = await fetch(`${API_URL}/SubscriptionPlan/getAll`);
+    if (!res.ok) {
+      throw new Error('Failed to fetch subscription plans');
+    }
+
+    const json = await res.json();
+    return json.data ?? json;
   }
 }
