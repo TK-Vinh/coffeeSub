@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, SectionList, StyleSheet } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
+import { SectionList, StyleSheet } from 'react-native';
+import { ActivityIndicator, List } from 'react-native-paper';
 import { ThemedView } from '@/components/ThemedView';
 import { CoffeeItemCard } from '@/components/CoffeeItemCard';
 import { CoffeeItem, CoffeeItemService } from '@/services/coffee/CoffeeItemService';
@@ -47,9 +47,7 @@ export default function Home() {
       keyExtractor={(item) => item.coffeeId.toString()}
       renderItem={({ item }) => <CoffeeItemCard item={item} />}
       renderSectionHeader={({ section: { title } }) => (
-        <ThemedText type="subtitle" style={styles.sectionTitle}>
-          {title}
-        </ThemedText>
+        <List.Subheader style={styles.sectionTitle}>{title}</List.Subheader>
       )}
     />
   );
@@ -58,5 +56,5 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: { padding: 16 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  sectionTitle: { marginTop: 16, marginBottom: 8 },
+  sectionTitle: { marginTop: 16 },
 });

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { TextInput, Button, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { Button, Text, TextInput } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 // eslint-disable-next-line import/no-unresolved
 import { Toast } from 'toastify-react-native';
@@ -28,29 +29,30 @@ export default function SignIn() {
     }
   };
 
-  const borderColor = useThemeColor({}, 'icon');
   const textColor = useThemeColor({}, 'text');
   return (
     <ThemedView style={styles.container}>
       <TextInput
-        placeholder="Email"
+        label="Email"
         value={email}
         onChangeText={setEmail}
-        style={[styles.input, { borderColor, color: textColor }]}
-        placeholderTextColor={borderColor}
+        mode="outlined"
+        style={styles.input}
       />
       <TextInput
-        placeholder="Password"
+        label="Password"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
-        style={[styles.input, { borderColor, color: textColor }]}
-        placeholderTextColor={borderColor}
+        mode="outlined"
+        style={styles.input}
       />
-      <Button title="Sign In" onPress={handleSignIn} />
+      <Button mode="contained" onPress={handleSignIn} style={styles.button}>
+        Sign In
+      </Button>
       <View style={styles.separator}>
         <Text style={[styles.separatorText, { color: textColor }]}>If you don&apos;t have an account</Text>
-        <Button title="Sign Up" onPress={() => router.replace('/sign-up')} />
+        <Button onPress={() => router.replace('/sign-up')}>Sign Up</Button>
       </View>
     </ThemedView>
   );
@@ -58,7 +60,8 @@ export default function SignIn() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 16 },
-  input: { borderWidth: 1, marginBottom: 12, padding: 8 },
-  separator: { marginTop: 16, alignItems: 'center' },
+  input: { marginBottom: 12 },
+  button: { marginTop: 4 },
+  separator: { marginTop: 24, alignItems: 'center' },
   separatorText: { marginBottom: 8 },
 });
