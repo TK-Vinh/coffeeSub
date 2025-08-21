@@ -7,11 +7,9 @@ import { WebView } from 'react-native-webview';
 import { ThemedView } from '@/components/ThemedView';
 import { Plan } from '@/factories/PlanFactory';
 import { SubscriptionFacade } from '@/facades/SubscriptionFacade';
-import { AuthFacade } from '@/facades/AuthFacade';
 import { useAuth } from '@/hooks/useAuth';
 
 const facade = new SubscriptionFacade();
-const authFacade = new AuthFacade();
 
 export default function PlanDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -19,7 +17,7 @@ export default function PlanDetail() {
   const [loading, setLoading] = useState(true);
   const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const { token } = useAuth();
+  const { userId } = useAuth();
 
   useEffect(() => {
     if (!id) return;
@@ -55,11 +53,10 @@ export default function PlanDetail() {
   }
 
   const handleSubscribe = async () => {
-    if (!token) return;
+    if (!userId) return;
     try {
       setSubmitting(true);
-      const user = await authFacade.currentUser(token);
-      const url = await facade.createPaymentUrl(Number(id), user.id);
+      const url = await facade.createPaymentUrl(Number(id), userId);
       setPaymentUrl(url);
     } catch (e) {
       console.error(e);
