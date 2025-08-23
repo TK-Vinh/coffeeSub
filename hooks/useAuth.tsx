@@ -1,30 +1,69 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { Buffer } from 'buffer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface AuthContextValue {
   token: string | null;
   email: string | null;
-  signIn: (token: string, email: string) => void;
-  signOut: () => void;
+  userId: number | null;
+  signIn: (token: string, email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
+const TOKEN_KEY = 'authToken';
+const EMAIL_KEY = 'authEmail';
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
+  const [userId, setUserId] = useState<number | null>(null);
 
-  const signIn = (newToken: string, newEmail: string) => {
-    setToken(newToken);
-    setEmail(newEmail);
+  const decodeUserId = (jwt: string): number | null => {
+    try {
+      const base64Url = jwt.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = Buffer.from(base64, 'base64').toString('utf-8');
+      const payload = JSON.parse(jsonPayload);
+      return payload?.id ?? payload?.userId ?? payload?.nameid ?? null;
+    } catch {
+      return null;
+    }
   };
 
-  const signOut = () => {
-    setToken(null);
-    setEmail(null);
+  useEffect(() => {
+    const restore = async () => {
+      try {
+        const storedToken = await AsyncStorage.getItem(TOKEN_KEY);
+        const storedEmail = await AsyncStorage.getItem(EMAIL_KEY);
+        if (storedToken) {
+          setToken(storedToken);
+          setUserId(decodeUserId(storedToken));
+        }
+        if (storedEmail) {
+          setEmail(storedEmail);
+        }
+      } catch {
+        // ignore storage errors
+      }
+    };
+    restore();
+  }, []);
+
+  const signIn = async (newToken: string, newEmail: string) => {
+    setToken(newToken);
+    setEmail(newEmail);
+    setUserId(decodeUserId(newToken));
+    try {
+      await AsyncStorage.setItem(TOKEN_KEY, newToken);
+      await AsyncStorage.setItem(EMAIL_KEY, newEmail);
+    } catch {
+      // ignore storage errors
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ token, email, signIn, signOut }}>
+    <AuthContext.Provider value={{ token, email, userId, signIn }}>
       {children}
     </AuthContext.Provider>
   );

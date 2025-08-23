@@ -7,6 +7,23 @@ export interface AuthResponse {
   token: string;
 }
 
+export interface User {
+  id: number;
+  username: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  role: string;
+  userSubscriptions: {
+    subscriptionId: number;
+    planId: number;
+    startDate: string;
+    endDate: string;
+    remainingCups: number;
+    isActive: boolean;
+  };
+}
+
 /**
  * AuthService is responsible for communicating with the backend API.
  * In a real application these methods would use `fetch` or another
@@ -43,7 +60,24 @@ export class AuthService {
     return { token: '' };
   }
 
-  async signOut(): Promise<void> {
-    return;
+  async currentUser(token: string): Promise<User> {
+    if (!API_URL) {
+      throw new Error('Missing API URL');
+    }
+
+    const res = await fetch(`${API_URL}/Auth/current-logged-user`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch user');
+    }
+
+    const json = await res.json();
+    if (!json?.data) {
+      throw new Error('User not found');
+    }
+
+    return json.data as User;
   }
 }
