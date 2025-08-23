@@ -25,7 +25,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
       const jsonPayload = Buffer.from(base64, 'base64').toString('utf-8');
       const payload = JSON.parse(jsonPayload);
-      return payload?.id ?? payload?.userId ?? payload?.nameid ?? null;
+
+      const rawId =
+        payload?.id ??
+        payload?.userId ??
+        payload?.userID ??
+        payload?.nameid ??
+        payload?.sub ??
+        payload?.Id ??
+        payload?.UserId ??
+        payload?.['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
+
+      if (typeof rawId === 'string') {
+        const parsed = parseInt(rawId, 10);
+        return Number.isNaN(parsed) ? null : parsed;
+      }
+      if (typeof rawId === 'number') {
+        return rawId;
+      }
+      return null;
     } catch {
       return null;
     }
