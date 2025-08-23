@@ -18,7 +18,7 @@ export default function SignIn() {
   const handleSignIn = async () => {
     try {
       const { token } = await auth.signIn({ email, password });
-      setAuth(token, email);
+      await setAuth(token, email);
       Alert.alert('Success', 'Signed in successfully');
       router.replace('/(tabs)');
     } catch (e) {
