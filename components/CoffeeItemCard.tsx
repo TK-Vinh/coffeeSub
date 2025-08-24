@@ -24,7 +24,7 @@ export function CoffeeItemCard({ item }: Props) {
         >
           {item.coffeeName}
         </Text>
-        <Text variant="bodyMedium" numberOfLines={2}>
+        <Text variant="bodyMedium" numberOfLines={2} ellipsizeMode="tail">
           {item.description}
         </Text>
       </Card.Content>
