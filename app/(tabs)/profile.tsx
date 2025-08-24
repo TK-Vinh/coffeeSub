@@ -38,11 +38,11 @@ export default function Profile() {
       <Appbar.Header>
         <Appbar.Content title="Profile" />
         <Appbar.Action
-          icon={() => (
+          icon={({ size, color }) => (
             <MaterialIcons
               name={colorScheme === 'dark' ? 'light-mode' : 'dark-mode'}
-              size={24}
-              color="black"
+              size={size}
+              color={color}
             />
           )}
           onPress={toggleScheme}

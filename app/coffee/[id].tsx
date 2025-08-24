@@ -7,6 +7,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { CoffeeItem, CoffeeItemService } from '@/services/coffee/CoffeeItemService';
 import { AuthFacade } from '@/facades/AuthFacade';
 import { useAuth } from '@/hooks/useAuth';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function CoffeeDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -53,6 +54,8 @@ export default function CoffeeDetail() {
     );
   }
 
+  const secondary = useThemeColor({}, 'icon');
+
   return (
     <ThemedView style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.container}>
@@ -61,13 +64,9 @@ export default function CoffeeDetail() {
           {item.coffeeName}
         </Text>
         <Text style={styles.description}>{item.description}</Text>
-        <Text style={styles.code}>Code: {item.code}</Text>
+        <Text style={[styles.code, { color: secondary }]}>Code: {item.code}</Text>
         <Text style={styles.remaining}>Tickets left: {remaining ?? '—'}</Text>
-        <Button
-          mode="contained"
-          icon="ticket-outline"
-          style={styles.button}
-        >
+        <Button mode="contained" icon="ticket-outline" style={styles.button}>
           Use Ticket
         </Button>
       </ScrollView>
@@ -81,7 +80,7 @@ const styles = StyleSheet.create({
   image: { width: '100%', height: 200, marginBottom: 16 },
   title: { marginBottom: 8 },
   description: { marginBottom: 8 },
-  code: { marginBottom: 16, color: '#666' },
+  code: { marginBottom: 16 },
   remaining: { marginBottom: 8, fontWeight: 'bold' },
   button: { marginTop: 8 },
 });
