@@ -40,8 +40,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const storedToken = await AsyncStorage.getItem(TOKEN_KEY);
         const storedEmail = await AsyncStorage.getItem(EMAIL_KEY);
         const storedUserId = await AsyncStorage.getItem(USER_ID_KEY);
+
         if (storedToken) {
-          setToken(storedToken);
           let id = decodeUserId(storedToken);
           if (id === null) {
             try {
@@ -51,13 +51,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             } catch {
               if (storedUserId) {
                 id = parseInt(storedUserId, 10);
+              } else {
+                await AsyncStorage.multiRemove([TOKEN_KEY, EMAIL_KEY]);
+                return;
               }
             }
           }
+
+          setToken(storedToken);
           setUserId(id);
         } else if (storedUserId) {
           setUserId(parseInt(storedUserId, 10));
         }
+
         if (storedEmail) {
           setEmail(storedEmail);
         }
@@ -69,28 +75,33 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signIn = async (newToken: string, newEmail: string) => {
-    setToken(newToken);
-    setEmail(newEmail);
     try {
       const profile = await new AuthFacade().currentUser(newToken);
+      setToken(newToken);
+      setEmail(newEmail);
       setUserId(profile.id);
-      await AsyncStorage.setItem(USER_ID_KEY, String(profile.id));
+      await AsyncStorage.multiSet([
+        [TOKEN_KEY, newToken],
+        [EMAIL_KEY, newEmail],
+        [USER_ID_KEY, String(profile.id)],
+      ]);
     } catch {
       const decoded = decodeUserId(newToken);
-      setUserId(decoded);
-      if (decoded !== null) {
-        try {
-          await AsyncStorage.setItem(USER_ID_KEY, String(decoded));
-        } catch {
-          // ignore storage errors
-        }
+      if (decoded === null) {
+        throw new Error('Unable to fetch profile');
       }
-    }
-    try {
-      await AsyncStorage.setItem(TOKEN_KEY, newToken);
-      await AsyncStorage.setItem(EMAIL_KEY, newEmail);
-    } catch {
-      // ignore storage errors
+      setToken(newToken);
+      setEmail(newEmail);
+      setUserId(decoded);
+      try {
+        await AsyncStorage.multiSet([
+          [TOKEN_KEY, newToken],
+          [EMAIL_KEY, newEmail],
+          [USER_ID_KEY, String(decoded)],
+        ]);
+      } catch {
+        // ignore storage errors
+      }
     }
   };
 
