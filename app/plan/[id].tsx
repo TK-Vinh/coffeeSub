@@ -29,7 +29,7 @@ export default function PlanDetail() {
 
   if (loading) {
     return (
-      <ThemedView style={styles.center}>
+      <ThemedView style={styles.center} useSafeArea>
         <ActivityIndicator />
       </ThemedView>
     );
@@ -37,7 +37,7 @@ export default function PlanDetail() {
 
   if (!plan) {
     return (
-      <ThemedView style={styles.center}>
+      <ThemedView style={styles.center} useSafeArea>
         <Text>No plan found</Text>
       </ThemedView>
     );
@@ -57,7 +57,7 @@ export default function PlanDetail() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={styles.container} useSafeArea>
       <Card>
         <Card.Title title={plan.planName} />
         <Card.Content>

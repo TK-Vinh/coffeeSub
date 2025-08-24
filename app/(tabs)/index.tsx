@@ -50,39 +50,42 @@ export default function Home() {
 
   if (loading) {
     return (
-      <ThemedView style={styles.center}>
+      <ThemedView style={styles.center} useSafeArea>
         <ActivityIndicator />
       </ThemedView>
     );
   }
 
   return (
-    <FlatList
-      contentContainerStyle={styles.container}
-      data={categories}
-      ListHeaderComponent={
-        <Text style={styles.remaining}>
-          Remaining Tickets: {remaining ?? '—'}
-        </Text>
-      }
-      keyExtractor={(item) => item.title}
-      renderItem={({ item }) => (
-        <View style={styles.category}>
-          <List.Subheader style={styles.sectionTitle}>{item.title}</List.Subheader>
-          <FlatList
-            data={item.data}
-            horizontal
-            keyExtractor={(c) => c.coffeeId.toString()}
-            renderItem={({ item: coffee }) => <CoffeeItemCard item={coffee} />}
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
-      )}
-    />
+    <ThemedView style={styles.screen} useSafeArea>
+      <FlatList
+        contentContainerStyle={styles.container}
+        data={categories}
+        ListHeaderComponent={
+          <Text style={styles.remaining}>
+            Remaining Tickets: {remaining ?? '—'}
+          </Text>
+        }
+        keyExtractor={(item) => item.title}
+        renderItem={({ item }) => (
+          <View style={styles.category}>
+            <List.Subheader style={styles.sectionTitle}>{item.title}</List.Subheader>
+            <FlatList
+              data={item.data}
+              horizontal
+              keyExtractor={(c) => c.coffeeId.toString()}
+              renderItem={({ item: coffee }) => <CoffeeItemCard item={coffee} />}
+              showsHorizontalScrollIndicator={false}
+            />
+          </View>
+        )}
+      />
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: { flex: 1 },
   container: { padding: 16 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   remaining: { marginBottom: 16, fontWeight: 'bold' },

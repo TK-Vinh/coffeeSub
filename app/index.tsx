@@ -11,7 +11,7 @@ export default function Welcome() {
 
   const tint = useThemeColor({}, 'tint');
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={styles.container} useSafeArea>
       <Button title="Sign In" onPress={() => router.push('/sign-in')} />
       <Button title="Sign Up" onPress={() => router.push('/sign-up')} />
       <Pressable onPress={() => router.replace('/(tabs)')} style={styles.guest}>

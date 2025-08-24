@@ -40,7 +40,7 @@ export default function CoffeeDetail() {
 
   if (loading) {
     return (
-      <ThemedView style={styles.center}>
+      <ThemedView style={styles.center} useSafeArea>
         <ActivityIndicator />
       </ThemedView>
     );
@@ -48,7 +48,7 @@ export default function CoffeeDetail() {
 
   if (!item) {
     return (
-      <ThemedView style={styles.center}>
+      <ThemedView style={styles.center} useSafeArea>
         <Text>No coffee found</Text>
       </ThemedView>
     );
@@ -57,7 +57,7 @@ export default function CoffeeDetail() {
   const secondary = useThemeColor({}, 'icon');
 
   return (
-    <ThemedView style={{ flex: 1 }}>
+    <ThemedView style={{ flex: 1 }} useSafeArea>
       <ScrollView contentContainerStyle={styles.container}>
         {item.imageUrl ? <Image source={{ uri: item.imageUrl }} style={styles.image} /> : null}
         <Text variant="headlineSmall" style={styles.title}>

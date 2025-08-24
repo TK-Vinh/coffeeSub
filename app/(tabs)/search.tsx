@@ -11,7 +11,7 @@ export default function Search() {
   const [selected, setSelected] = useState('All');
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={styles.container} useSafeArea>
       <Searchbar
         placeholder="Search drinks"
         value={query}

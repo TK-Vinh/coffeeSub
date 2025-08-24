@@ -34,7 +34,7 @@ export default function Profile() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={styles.container} useSafeArea>
       <Appbar.Header>
         <Appbar.Content title="Profile" />
         <Appbar.Action
