@@ -5,11 +5,15 @@ import { useLocalSearchParams } from 'expo-router';
 
 import { ThemedView } from '@/components/ThemedView';
 import { CoffeeItem, CoffeeItemService } from '@/services/coffee/CoffeeItemService';
+import { AuthFacade } from '@/facades/AuthFacade';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function CoffeeDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [item, setItem] = useState<CoffeeItem | null>(null);
   const [loading, setLoading] = useState(true);
+  const [remaining, setRemaining] = useState<number | null>(null);
+  const { token } = useAuth();
 
   useEffect(() => {
     if (!id) return;
@@ -20,6 +24,18 @@ export default function CoffeeDetail() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    if (!token) {
+      setRemaining(null);
+      return;
+    }
+    const facade = new AuthFacade();
+    facade
+      .currentUser(token)
+      .then((u) => setRemaining(u.userSubscriptions.remainingCups))
+      .catch(console.error);
+  }, [token]);
 
   if (loading) {
     return (
@@ -46,8 +62,13 @@ export default function CoffeeDetail() {
         </Text>
         <Text style={styles.description}>{item.description}</Text>
         <Text style={styles.code}>Code: {item.code}</Text>
-        <Button mode="contained" style={styles.button}>
-          Sử dụng ngay
+        <Text style={styles.remaining}>Tickets left: {remaining ?? '—'}</Text>
+        <Button
+          mode="contained"
+          icon="ticket-outline"
+          style={styles.button}
+        >
+          Use Ticket
         </Button>
       </ScrollView>
     </ThemedView>
@@ -61,6 +82,7 @@ const styles = StyleSheet.create({
   title: { marginBottom: 8 },
   description: { marginBottom: 8 },
   code: { marginBottom: 16, color: '#666' },
+  remaining: { marginBottom: 8, fontWeight: 'bold' },
   button: { marginTop: 8 },
 });
 

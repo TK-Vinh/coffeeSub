@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
-import { ActivityIndicator, List } from 'react-native-paper';
+import { ActivityIndicator, List, Text } from 'react-native-paper';
 import { ThemedView } from '@/components/ThemedView';
 import { CoffeeItemCard } from '@/components/CoffeeItemCard';
 import { CoffeeItem, CoffeeItemService } from '@/services/coffee/CoffeeItemService';
 import { CategoryService } from '@/services/coffee/CategoryService';
+import { AuthFacade } from '@/facades/AuthFacade';
+import { useAuth } from '@/hooks/useAuth';
 
 type Category = {
   title: string;
@@ -14,6 +16,8 @@ type Category = {
 export default function Home() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [remaining, setRemaining] = useState<number | null>(null);
+  const { token } = useAuth();
 
   useEffect(() => {
     const itemSvc = new CoffeeItemService();
@@ -32,6 +36,18 @@ export default function Home() {
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    if (!token) {
+      setRemaining(null);
+      return;
+    }
+    const facade = new AuthFacade();
+    facade
+      .currentUser(token)
+      .then((u) => setRemaining(u.userSubscriptions.remainingCups))
+      .catch(console.error);
+  }, [token]);
+
   if (loading) {
     return (
       <ThemedView style={styles.center}>
@@ -44,6 +60,11 @@ export default function Home() {
     <FlatList
       contentContainerStyle={styles.container}
       data={categories}
+      ListHeaderComponent={
+        <Text style={styles.remaining}>
+          Remaining Tickets: {remaining ?? '—'}
+        </Text>
+      }
       keyExtractor={(item) => item.title}
       renderItem={({ item }) => (
         <View style={styles.category}>
@@ -64,6 +85,7 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: { padding: 16 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  remaining: { marginBottom: 16, fontWeight: 'bold' },
   sectionTitle: { marginBottom: 8 },
   category: { marginBottom: 24 },
 });
