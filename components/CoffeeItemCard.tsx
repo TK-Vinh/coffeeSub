@@ -16,7 +16,12 @@ export function CoffeeItemCard({ item }: Props) {
     <Card style={styles.card} onPress={handlePress}>
       {item.imageUrl ? <Card.Cover source={{ uri: item.imageUrl }} style={styles.cover} /> : null}
       <Card.Content>
-        <Text variant="titleMedium" style={styles.title}>
+        <Text
+          variant="titleMedium"
+          style={styles.title}
+          numberOfLines={2}
+          ellipsizeMode="tail"
+        >
           {item.coffeeName}
         </Text>
         <Text variant="bodyMedium" numberOfLines={2}>

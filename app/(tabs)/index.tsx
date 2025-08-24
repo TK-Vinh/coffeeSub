@@ -58,14 +58,10 @@ export default function Home() {
 
   return (
     <ThemedView style={styles.screen} useSafeArea>
+      <Text style={styles.remaining}>Remaining Tickets: {remaining ?? '—'}</Text>
       <FlatList
-        contentContainerStyle={styles.container}
+        contentContainerStyle={styles.list}
         data={categories}
-        ListHeaderComponent={
-          <Text style={styles.remaining}>
-            Remaining Tickets: {remaining ?? '—'}
-          </Text>
-        }
         keyExtractor={(item) => item.title}
         renderItem={({ item }) => (
           <View style={styles.category}>
@@ -86,9 +82,9 @@ export default function Home() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1 },
-  container: { padding: 16 },
+  list: { paddingHorizontal: 16, paddingBottom: 16 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  remaining: { marginBottom: 16, fontWeight: 'bold' },
+  remaining: { marginHorizontal: 16, marginBottom: 16, fontWeight: 'bold' },
   sectionTitle: { marginBottom: 8 },
   category: { marginBottom: 24 },
 });
