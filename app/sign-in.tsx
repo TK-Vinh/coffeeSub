@@ -29,7 +29,7 @@ export default function SignIn() {
 
   const textColor = useThemeColor({}, 'text');
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={styles.container} useSafeArea>
       <TextInput
         label="Email"
         value={email}

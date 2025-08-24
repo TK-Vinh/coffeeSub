@@ -38,14 +38,21 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: () => <MaterialIcons name="person" size={24} color="black" />,
+          tabBarIcon: ({ color }) => <MaterialIcons name="person" size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="search"
+        options={{
+          title: 'Search',
+          tabBarIcon: ({ color }) => <MaterialIcons name="search" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="subscriptions"
         options={{
           title: 'Subscription',
-          tabBarIcon: () => <MaterialIcons name="attach-money" size={24} color="black" />,
+          tabBarIcon: ({ color }) => <MaterialIcons name="attach-money" size={24} color={color} />,
         }}
       />
     </Tabs>
