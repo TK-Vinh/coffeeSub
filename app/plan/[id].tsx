@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { Alert, StyleSheet } from 'react-native';
 import { ActivityIndicator, Button, Card, Text } from 'react-native-paper';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
@@ -44,7 +44,12 @@ export default function PlanDetail() {
   }
 
   const handleSubscribe = async () => {
-    if (!userId) return;
+    if (!userId) {
+      Alert.alert('Yêu cầu đăng nhập', 'Vui lòng đăng nhập để đăng ký', [
+        { text: 'OK', onPress: () => router.replace('/sign-in') },
+      ]);
+      return;
+    }
     try {
       setSubmitting(true);
       const url = await facade.createPaymentUrl(Number(id), userId);

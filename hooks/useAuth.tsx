@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Buffer } from 'buffer';
+import { AuthFacade } from '@/facades/AuthFacade';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { Buffer } from 'buffer';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 interface AuthContextValue {
   token: string | null;
   email: string | null;
@@ -13,6 +13,7 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 const TOKEN_KEY = 'authToken';
 const EMAIL_KEY = 'authEmail';
+const USER_ID_KEY = 'authUserId';
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
@@ -36,9 +37,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         const storedToken = await AsyncStorage.getItem(TOKEN_KEY);
         const storedEmail = await AsyncStorage.getItem(EMAIL_KEY);
+        const storedUserId = await AsyncStorage.getItem(USER_ID_KEY);
         if (storedToken) {
           setToken(storedToken);
-          setUserId(decodeUserId(storedToken));
+          let id = decodeUserId(storedToken);
+          if (id === null) {
+            try {
+              const profile = await new AuthFacade().currentUser(storedToken);
+              id = profile.id;
+              await AsyncStorage.setItem(USER_ID_KEY, String(id));
+            } catch {
+              if (storedUserId) {
+                id = parseInt(storedUserId, 10);
+              }
+            }
+          }
+          setUserId(id);
+        } else if (storedUserId) {
+          setUserId(parseInt(storedUserId, 10));
         }
         if (storedEmail) {
           setEmail(storedEmail);
@@ -53,7 +69,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signIn = async (newToken: string, newEmail: string) => {
     setToken(newToken);
     setEmail(newEmail);
-    setUserId(decodeUserId(newToken));
+    try {
+      const profile = await new AuthFacade().currentUser(newToken);
+      setUserId(profile.id);
+      await AsyncStorage.setItem(USER_ID_KEY, String(profile.id));
+    } catch {
+      const decoded = decodeUserId(newToken);
+      setUserId(decoded);
+      if (decoded !== null) {
+        try {
+          await AsyncStorage.setItem(USER_ID_KEY, String(decoded));
+        } catch {
+          // ignore storage errors
+        }
+      }
+    }
     try {
       await AsyncStorage.setItem(TOKEN_KEY, newToken);
       await AsyncStorage.setItem(EMAIL_KEY, newEmail);
