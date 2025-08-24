@@ -24,7 +24,12 @@ export function CoffeeItemCard({ item }: Props) {
         >
           {item.coffeeName}
         </Text>
-        <Text variant="bodyMedium" numberOfLines={2} ellipsizeMode="tail">
+        <Text
+          variant="bodyMedium"
+          numberOfLines={2}
+          ellipsizeMode="tail"
+          style={styles.description}
+        >
           {item.description}
         </Text>
       </Card.Content>
@@ -53,5 +58,8 @@ const styles = StyleSheet.create({
   },
   title: {
     marginBottom: 4,
+  },
+  description: {
+    minHeight: 40,
   },
 });
