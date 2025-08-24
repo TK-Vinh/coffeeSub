@@ -15,6 +15,7 @@ export default function CoffeeDetail() {
   const [loading, setLoading] = useState(true);
   const [remaining, setRemaining] = useState<number | null>(null);
   const { token } = useAuth();
+  const secondary = useThemeColor({}, 'icon');
 
   useEffect(() => {
     if (!id) return;
@@ -53,8 +54,6 @@ export default function CoffeeDetail() {
       </ThemedView>
     );
   }
-
-  const secondary = useThemeColor({}, 'icon');
 
   return (
     <ThemedView style={{ flex: 1 }} useSafeArea>
