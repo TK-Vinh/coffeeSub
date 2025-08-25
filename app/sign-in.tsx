@@ -19,6 +19,9 @@ export default function SignIn() {
   const { signIn: setAuth } = useAuth();
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
     clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+    androidClientId:
+      process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID ??
+      '998234419612-qa7oprsiasf64o6uh0drbv3ls0u7uijs.apps.googleusercontent.com',
   });
 
   const handleSignIn = async () => {
