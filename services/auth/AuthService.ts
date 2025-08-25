@@ -60,6 +60,29 @@ export class AuthService {
     return { token: '' };
   }
 
+  async googleLogin(idToken: string): Promise<AuthResponse> {
+    if (!API_URL) {
+      throw new Error('Missing API URL');
+    }
+
+    const res = await fetch(`${API_URL}/Auth/google-login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken }),
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to sign in with Google');
+    }
+
+    const json = await res.json();
+    if (!json?.data?.token) {
+      throw new Error('Token not found');
+    }
+
+    return { token: json.data.token };
+  }
+
   async currentUser(token: string): Promise<User> {
     if (!API_URL) {
       throw new Error('Missing API URL');

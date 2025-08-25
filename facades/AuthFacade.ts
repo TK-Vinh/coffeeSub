@@ -15,6 +15,10 @@ export class AuthFacade {
     return this.proxy.signUp(credentials);
   }
 
+  googleLogin(idToken: string): Promise<AuthResponse> {
+    return this.proxy.googleLogin(idToken);
+  }
+
   currentUser(token: string): Promise<User> {
     return this.proxy.currentUser(token);
   }
