@@ -38,4 +38,26 @@ export class CoffeeItemService {
     const json = await res.json();
     return json.data ?? json;
   }
+
+  async search(keyword: string): Promise<CoffeeItem[]> {
+    if (!API_URL) {
+      throw new Error('Missing API URL');
+    }
+
+    const res = await fetch(`${API_URL}/CoffeeItem/search`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        searchCondition: { keyword, isDelete: false },
+        pageInfo: { pageNum: 1, pageSize: 10 },
+      }),
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to search coffee items');
+    }
+
+    const json = await res.json();
+    return json.data?.pageData ?? [];
+  }
 }

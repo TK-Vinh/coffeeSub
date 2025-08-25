@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { Card, Text } from 'react-native-paper';
+import { Card, Text, Button } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import type { CoffeeItem } from '@/services/coffee/CoffeeItemService';
 
@@ -16,11 +16,33 @@ export function CoffeeItemCard({ item }: Props) {
     <Card style={styles.card} onPress={handlePress}>
       {item.imageUrl ? <Card.Cover source={{ uri: item.imageUrl }} style={styles.cover} /> : null}
       <Card.Content>
-        <Text variant="titleMedium" style={styles.title}>
+        <Text
+          variant="titleMedium"
+          style={styles.title}
+          numberOfLines={2}
+          ellipsizeMode="tail"
+        >
           {item.coffeeName}
         </Text>
-        <Text variant="bodyMedium">{item.description}</Text>
+        <Text
+          variant="bodyMedium"
+          numberOfLines={2}
+          ellipsizeMode="tail"
+          style={styles.description}
+        >
+          {item.description}
+        </Text>
       </Card.Content>
+      <Card.Actions>
+        <Button
+          icon="ticket-outline"
+          mode="contained"
+          compact
+          onPress={handlePress}
+        >
+          Use Ticket
+        </Button>
+      </Card.Actions>
     </Card>
   );
 }
@@ -36,5 +58,8 @@ const styles = StyleSheet.create({
   },
   title: {
     marginBottom: 4,
+  },
+  description: {
+    minHeight: 40,
   },
 });

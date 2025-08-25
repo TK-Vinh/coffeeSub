@@ -10,14 +10,14 @@ export default function VnpayScreen() {
 
   if (!url) {
     return (
-      <ThemedView style={styles.center}>
+      <ThemedView style={styles.center} useSafeArea>
         <Text>Missing payment URL</Text>
       </ThemedView>
     );
   }
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={styles.container} useSafeArea>
       <WebView source={{ uri: url }} style={{ flex: 1 }} />
     </ThemedView>
   );

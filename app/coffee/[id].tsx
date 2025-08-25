@@ -5,11 +5,17 @@ import { useLocalSearchParams } from 'expo-router';
 
 import { ThemedView } from '@/components/ThemedView';
 import { CoffeeItem, CoffeeItemService } from '@/services/coffee/CoffeeItemService';
+import { AuthFacade } from '@/facades/AuthFacade';
+import { useAuth } from '@/hooks/useAuth';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function CoffeeDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [item, setItem] = useState<CoffeeItem | null>(null);
   const [loading, setLoading] = useState(true);
+  const [remaining, setRemaining] = useState<number | null>(null);
+  const { token } = useAuth();
+  const secondary = useThemeColor({}, 'icon');
 
   useEffect(() => {
     if (!id) return;
@@ -21,9 +27,21 @@ export default function CoffeeDetail() {
       .finally(() => setLoading(false));
   }, [id]);
 
+  useEffect(() => {
+    if (!token) {
+      setRemaining(null);
+      return;
+    }
+    const facade = new AuthFacade();
+    facade
+      .currentUser(token)
+      .then((u) => setRemaining(u.userSubscriptions.remainingCups))
+      .catch(console.error);
+  }, [token]);
+
   if (loading) {
     return (
-      <ThemedView style={styles.center}>
+      <ThemedView style={styles.center} useSafeArea>
         <ActivityIndicator />
       </ThemedView>
     );
@@ -31,23 +49,24 @@ export default function CoffeeDetail() {
 
   if (!item) {
     return (
-      <ThemedView style={styles.center}>
+      <ThemedView style={styles.center} useSafeArea>
         <Text>No coffee found</Text>
       </ThemedView>
     );
   }
 
   return (
-    <ThemedView style={{ flex: 1 }}>
+    <ThemedView style={{ flex: 1 }} useSafeArea>
       <ScrollView contentContainerStyle={styles.container}>
         {item.imageUrl ? <Image source={{ uri: item.imageUrl }} style={styles.image} /> : null}
         <Text variant="headlineSmall" style={styles.title}>
           {item.coffeeName}
         </Text>
         <Text style={styles.description}>{item.description}</Text>
-        <Text style={styles.code}>Code: {item.code}</Text>
-        <Button mode="contained" style={styles.button}>
-          Sử dụng ngay
+        <Text style={[styles.code, { color: secondary }]}>Code: {item.code}</Text>
+        <Text style={styles.remaining}>Tickets left: {remaining ?? '—'}</Text>
+        <Button mode="contained" icon="ticket-outline" style={styles.button}>
+          Use Ticket
         </Button>
       </ScrollView>
     </ThemedView>
@@ -60,7 +79,8 @@ const styles = StyleSheet.create({
   image: { width: '100%', height: 200, marginBottom: 16 },
   title: { marginBottom: 8 },
   description: { marginBottom: 8 },
-  code: { marginBottom: 16, color: '#666' },
+  code: { marginBottom: 16 },
+  remaining: { marginBottom: 8, fontWeight: 'bold' },
   button: { marginTop: 8 },
 });
 

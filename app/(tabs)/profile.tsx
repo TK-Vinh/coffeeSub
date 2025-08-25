@@ -13,13 +13,16 @@ const auth = new AuthFacade();
 
 export default function Profile() {
   const router = useRouter();
-  const { token, email } = useAuth();
+  const { token, email, signOut } = useAuth();
   const colorScheme = useColorScheme();
   const toggleScheme = useToggleColorScheme();
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    if (!token) return;
+    if (!token) {
+      setUser(null);
+      return;
+    }
     auth
       .currentUser(token)
       .then(setUser)
@@ -31,15 +34,15 @@ export default function Profile() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={styles.container} useSafeArea>
       <Appbar.Header>
         <Appbar.Content title="Profile" />
         <Appbar.Action
-          icon={() => (
+          icon={({ size, color }) => (
             <MaterialIcons
               name={colorScheme === 'dark' ? 'light-mode' : 'dark-mode'}
-              size={24}
-              color="black"
+              size={size}
+              color={color}
             />
           )}
           onPress={toggleScheme}
@@ -60,9 +63,13 @@ export default function Profile() {
       ) : (
         email && <Text style={styles.info}>{email}</Text>
       )}
-      {!token && (
+      {!token ? (
         <Button mode="contained" onPress={handleSignIn} style={styles.signInButton}>
           Sign In
+        </Button>
+      ) : (
+        <Button mode="outlined" onPress={signOut} style={styles.signOutButton}>
+          Sign Out
         </Button>
       )}
     </ThemedView>
@@ -74,4 +81,5 @@ const styles = StyleSheet.create({
   info: { marginBottom: 8, padding: 16 },
   card: { margin: 16 },
   signInButton: { marginHorizontal: 16, marginTop: 8 },
+  signOutButton: { marginHorizontal: 16, marginTop: 8 },
 });
