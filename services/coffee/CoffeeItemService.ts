@@ -38,4 +38,31 @@ export class CoffeeItemService {
     const json = await res.json();
     return json.data ?? json;
   }
+
+  async generateQrCode(
+    userId: number,
+    coffeeId: number,
+    token: string,
+  ): Promise<{ subscriptionId: number; coffeeCode: string; userId: number }> {
+    if (!API_URL) {
+      throw new Error('Missing API URL');
+    }
+
+    const res = await fetch(`${API_URL}/CoffeeItem/qrcode`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ userId, coffeeId }),
+    });
+
+    const json = await res.json().catch(() => null);
+    if (!res.ok) {
+      const message = json?.message || 'Failed to generate QR code';
+      throw new Error(message);
+    }
+
+    return json?.data ?? json;
+  }
 }
