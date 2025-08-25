@@ -18,6 +18,11 @@ export class AuthProxy {
     return this.service.signUp(credentials);
   }
 
+  async googleLogin(idToken: string): Promise<AuthResponse> {
+    console.log('AuthProxy: googleLogin called');
+    return this.service.googleLogin(idToken);
+  }
+
   async currentUser(token: string): Promise<User> {
     console.log('AuthProxy: currentUser called');
     return this.service.currentUser(token);
