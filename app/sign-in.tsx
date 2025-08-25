@@ -22,7 +22,7 @@ export default function SignIn() {
 
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
     clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID ?? '',
-    redirectUri: makeRedirectUri({ useProxy: true }),
+    redirectUri: makeRedirectUri({ scheme: 'coffeesub' }),
   });
 
   useEffect(() => {
@@ -72,7 +72,7 @@ export default function SignIn() {
       <Button
         mode="outlined"
         disabled={!request}
-        onPress={() => promptAsync({ useProxy: true })}
+        onPress={() => promptAsync({ useProxy: false })}
         style={styles.button}
       >
         Sign In with Google

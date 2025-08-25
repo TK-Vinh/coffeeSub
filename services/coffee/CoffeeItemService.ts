@@ -39,25 +39,30 @@ export class CoffeeItemService {
     return json.data ?? json;
   }
 
-  async search(keyword: string): Promise<CoffeeItem[]> {
+  async generateQrCode(
+    userId: number,
+    coffeeId: number,
+    token: string,
+  ): Promise<{ subscriptionId: number; coffeeCode: string; userId: number }> {
     if (!API_URL) {
       throw new Error('Missing API URL');
     }
 
-    const res = await fetch(`${API_URL}/CoffeeItem/search`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        searchCondition: { keyword, isDelete: false },
-        pageInfo: { pageNum: 1, pageSize: 10 },
-      }),
-    });
+    const res = await fetch(
+      `${API_URL}/CoffeeItem/qrcode?userId=${userId}&coffeeId=${coffeeId}`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
 
     if (!res.ok) {
-      throw new Error('Failed to search coffee items');
+      throw new Error('Failed to generate QR code');
     }
 
     const json = await res.json();
-    return json.data?.pageData ?? [];
+    return json.data ?? json;
   }
 }
