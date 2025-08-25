@@ -4,23 +4,37 @@ import { Button, Text, TextInput } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
+import { makeRedirectUri } from 'expo-auth-session';
 import { AuthFacade } from '@/facades/AuthFacade';
 import { useAuth } from '@/hooks/useAuth';
 import { ThemedView } from '@/components/ThemedView';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
-const auth = new AuthFacade();
 WebBrowser.maybeCompleteAuthSession();
+
+const auth = new AuthFacade();
 
 export default function SignIn() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { signIn: setAuth } = useAuth();
+
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
-    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+    clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID ?? '',
+    redirectUri: makeRedirectUri({ useProxy: true }),
   });
+
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { id_token } = response.params;
+      if (id_token) {
+        setAuth(id_token, '');
+        Alert.alert('Success', 'Signed in successfully');
+        router.replace('/(tabs)');
+      }
+    }
+  }, [response, router, setAuth]);
 
   const handleSignIn = async () => {
     try {
@@ -33,27 +47,6 @@ export default function SignIn() {
       Alert.alert('Sign in failed', message);
     }
   };
-
-  const handleGoogleSignIn = async (idToken: string) => {
-    try {
-      const { token } = await auth.googleLogin(idToken);
-      const profile = await auth.currentUser(token);
-      await setAuth(token, profile.email);
-      router.replace('/(tabs)');
-    } catch (e) {
-      const message = e instanceof Error ? e.message : String(e);
-      Alert.alert('Google sign in failed', message);
-    }
-  };
-
-  useEffect(() => {
-    if (response?.type === 'success') {
-      const idToken = response.params.id_token;
-      if (idToken) {
-        handleGoogleSignIn(idToken);
-      }
-    }
-  }, [response]);
 
   const textColor = useThemeColor({}, 'text');
   return (
@@ -77,13 +70,12 @@ export default function SignIn() {
         Sign In
       </Button>
       <Button
-        icon="google"
         mode="outlined"
-        onPress={() => promptAsync()}
-        style={styles.button}
         disabled={!request}
+        onPress={() => promptAsync({ useProxy: true })}
+        style={styles.button}
       >
-        Sign in with Google
+        Sign In with Google
       </Button>
       <View style={styles.separator}>
         <Text style={[styles.separatorText, { color: textColor }]}>If you don&apos;t have an account</Text>
