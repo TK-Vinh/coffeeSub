@@ -1,44 +1,65 @@
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { useThemeColor } from '@/hooks/useThemeColor';
-import type { CoffeeItem } from '@/services/coffee/CoffeeItemService';
 import React from 'react';
-import { Image, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { Card, Text, Button } from 'react-native-paper';
+import { useRouter } from 'expo-router';
+import type { CoffeeItem } from '@/services/coffee/CoffeeItemService';
 
 interface Props {
   item: CoffeeItem;
 }
 
 export function CoffeeItemCard({ item }: Props) {
-  const borderColor = useThemeColor({}, 'icon');
-  const backgroundColor = useThemeColor({}, 'background');
+  const router = useRouter();
+  const handlePress = () => router.push(`/coffee/${item.coffeeId}`);
+
   return (
-    <ThemedView style={[styles.card, { borderColor, backgroundColor }]}>
-      {item.imageUrl ? (
-        <Image source={{ uri: item.imageUrl }} style={styles.image} />
-      ) : null}
-      <ThemedText type="defaultSemiBold" style={styles.title}>
-        {item.coffeeName}
-      </ThemedText>
-      <ThemedText>{item.description}</ThemedText>
-    </ThemedView>
+    <Card style={styles.card} onPress={handlePress}>
+      {item.imageUrl ? <Card.Cover source={{ uri: item.imageUrl }} style={styles.cover} /> : null}
+      <Card.Content>
+        <Text
+          variant="titleMedium"
+          style={styles.title}
+          numberOfLines={2}
+          ellipsizeMode="tail"
+        >
+          {item.coffeeName}
+        </Text>
+        <Text
+          variant="bodyMedium"
+          numberOfLines={2}
+          ellipsizeMode="tail"
+          style={styles.description}
+        >
+          {item.description}
+        </Text>
+      </Card.Content>
+      <Card.Actions>
+        <Button
+          icon="ticket-outline"
+          mode="contained"
+          compact
+          onPress={handlePress}
+        >
+          Use Ticket
+        </Button>
+      </Card.Actions>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
+    width: 200,
+    marginRight: 16,
     marginBottom: 16,
   },
-  image: {
-    width: '100%',
+  cover: {
     height: 160,
-    borderRadius: 4,
-    marginBottom: 8,
   },
   title: {
     marginBottom: 4,
+  },
+  description: {
+    minHeight: 40,
   },
 });

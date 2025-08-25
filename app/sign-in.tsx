@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
-import { TextInput, Button, StyleSheet, Text, View } from 'react-native';
-import { useRouter } from 'expo-router';
-// eslint-disable-next-line import/no-unresolved
-import { Toast } from 'toastify-react-native';
+import { ThemedView } from '@/components/ThemedView';
 import { AuthFacade } from '@/facades/AuthFacade';
 import { useAuth } from '@/hooks/useAuth';
-import { ThemedView } from '@/components/ThemedView';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { makeRedirectUri } from 'expo-auth-session';
+import * as Google from 'expo-auth-session/providers/google';
+import { useRouter } from 'expo-router';
+import * as WebBrowser from 'expo-web-browser';
+import React, { useEffect, useState } from 'react';
+import { Alert, StyleSheet, View } from 'react-native';
+import { Button, Text, TextInput } from 'react-native-paper';
+
+WebBrowser.maybeCompleteAuthSession();
 
 const auth = new AuthFacade();
 
@@ -16,41 +20,66 @@ export default function SignIn() {
   const [password, setPassword] = useState('');
   const { signIn: setAuth } = useAuth();
 
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+    clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID ?? '',
+    redirectUri: makeRedirectUri({ scheme: 'coffeesub' }),
+  });
+
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { id_token } = response.params;
+      if (id_token) {
+        setAuth(id_token, '');
+        Alert.alert('Success', 'Signed in successfully');
+        router.replace('/(tabs)');
+      }
+    }
+  }, [response, router, setAuth]);
+
   const handleSignIn = async () => {
     try {
       const { token } = await auth.signIn({ email, password });
-      setAuth(token, email);
-      Toast.success('Signed in successfully');
+      await setAuth(token, email);
+      Alert.alert('Success', 'Signed in successfully');
       router.replace('/(tabs)');
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
-      Toast.error(message);
+      Alert.alert('Sign in failed', message);
     }
   };
 
-  const borderColor = useThemeColor({}, 'icon');
   const textColor = useThemeColor({}, 'text');
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={styles.container} useSafeArea>
       <TextInput
-        placeholder="Email"
+        label="Email"
         value={email}
         onChangeText={setEmail}
-        style={[styles.input, { borderColor, color: textColor }]}
-        placeholderTextColor={borderColor}
+        mode="outlined"
+        style={styles.input}
       />
       <TextInput
-        placeholder="Password"
+        label="Password"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
-        style={[styles.input, { borderColor, color: textColor }]}
-        placeholderTextColor={borderColor}
+        mode="outlined"
+        style={styles.input}
       />
-      <Button title="Sign In" onPress={handleSignIn} />
+      <Button mode="contained" onPress={handleSignIn} style={styles.button}>
+        Sign In
+      </Button>
+      <Button
+        mode="outlined"
+        disabled={!request}
+        onPress={() => promptAsync({ useProxy: false })}
+        style={styles.button}
+      >
+        Sign In with Google
+      </Button>
       <View style={styles.separator}>
         <Text style={[styles.separatorText, { color: textColor }]}>If you don&apos;t have an account</Text>
-        <Button title="Sign Up" onPress={() => router.replace('/sign-up')} />
+        <Button onPress={() => router.replace('/sign-up')}>Sign Up</Button>
       </View>
     </ThemedView>
   );
@@ -58,7 +87,8 @@ export default function SignIn() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 16 },
-  input: { borderWidth: 1, marginBottom: 12, padding: 8 },
-  separator: { marginTop: 16, alignItems: 'center' },
+  input: { marginBottom: 12 },
+  button: { marginTop: 4 },
+  separator: { marginTop: 24, alignItems: 'center' },
   separatorText: { marginBottom: 8 },
 });
