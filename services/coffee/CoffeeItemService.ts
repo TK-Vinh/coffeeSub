@@ -48,15 +48,14 @@ export class CoffeeItemService {
       throw new Error('Missing API URL');
     }
 
-    const res = await fetch(
-      `${API_URL}/CoffeeItem/qrcode?userId=${userId}&coffeeId=${coffeeId}`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    const res = await fetch(`${API_URL}/CoffeeItem/qrcode`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
       },
-    );
+      body: JSON.stringify({ userId, coffeeId }),
+    });
 
     if (!res.ok) {
       throw new Error('Failed to generate QR code');
