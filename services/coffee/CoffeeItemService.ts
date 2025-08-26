@@ -43,19 +43,22 @@ export class CoffeeItemService {
     userId: number,
     coffeeId: number,
     token: string,
-  ): Promise<{ subscriptionId: number; coffeeCode: string; userId: number }> {
+  ): Promise<{
+    success: boolean;
+    message: string;
+    subscriptionId: number;
+    coffeeCode: string;
+    userId: number;
+  }> {
     if (!API_URL) {
       throw new Error('Missing API URL');
     }
 
+    // The QR-code endpoint expects the identifiers as query parameters on a GET
+    // request with an authorization header.
     const res = await fetch(
       `${API_URL}/CoffeeItem/qrcode?userId=${userId}&coffeeId=${coffeeId}`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
+      { headers: { Authorization: `Bearer ${token}` } },
     );
 
     if (!res.ok) {
