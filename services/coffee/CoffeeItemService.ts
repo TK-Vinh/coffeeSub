@@ -48,14 +48,16 @@ export class CoffeeItemService {
       throw new Error('Missing API URL');
     }
 
-    const res = await fetch(`${API_URL}/CoffeeItem/qrcode`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
+    // The QR-code endpoint expects the identifiers as query parameters rather than
+    // a JSON payload. Sending them in the body resulted in a 400 response from the
+    // API. Use a POST request with the user and coffee IDs encoded in the URL.
+    const res = await fetch(
+      `${API_URL}/CoffeeItem/qrcode?userId=${userId}&coffeeId=${coffeeId}`,
+      {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
       },
-      body: JSON.stringify({ userId, coffeeId }),
-    });
+    );
 
     if (!res.ok) {
       throw new Error('Failed to generate QR code');
