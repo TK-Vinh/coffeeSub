@@ -1,13 +1,14 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Buffer } from 'buffer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AuthFacade } from '@/facades/AuthFacade';
+import { AuthFacade, User } from '@/facades/AuthFacade';
 
 interface AuthContextValue {
   token: string | null;
   email: string | null;
   userId: number | null;
   subscriptionId: number | null;
+  profile: User | null;
   signIn: (token: string, email: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -18,12 +19,14 @@ const TOKEN_KEY = 'authToken';
 const EMAIL_KEY = 'authEmail';
 const USER_ID_KEY = 'authUserId';
 const SUBSCRIPTION_ID_KEY = 'authSubscriptionId';
+const PROFILE_KEY = 'authProfile';
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [userId, setUserId] = useState<number | null>(null);
   const [subscriptionId, setSubscriptionId] = useState<number | null>(null);
+  const [profile, setProfile] = useState<User | null>(null);
 
   const decodeUserId = (jwt: string): number | null => {
     try {
@@ -58,37 +61,56 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const storedSubscriptionId = await AsyncStorage.getItem(
           SUBSCRIPTION_ID_KEY,
         );
+        const storedProfile = await AsyncStorage.getItem(PROFILE_KEY);
 
         if (storedToken) {
-          let id = decodeUserId(storedToken);
-          let subId = decodeSubscriptionId(storedToken);
-          if (id === null || subId === null) {
+          let profile: User | null = null;
+          if (storedProfile) {
             try {
-              const profile = await new AuthFacade().currentUser(storedToken);
-              if (id === null) {
-                id = profile.id;
-                await AsyncStorage.setItem(USER_ID_KEY, String(id));
-              }
-              if (subId === null) {
-                subId = profile.userSubscriptions.subscriptionId;
-                await AsyncStorage.setItem(
-                  SUBSCRIPTION_ID_KEY,
-                  String(subId),
-                );
-              }
+              profile = JSON.parse(storedProfile) as User;
             } catch {
-              if (storedUserId) {
+              profile = null;
+            }
+          }
+          let id = profile?.id ?? decodeUserId(storedToken);
+          let subId =
+            profile?.userSubscriptions.subscriptionId ??
+            decodeSubscriptionId(storedToken);
+          if (!profile || id === null || subId === null) {
+            try {
+              profile = await new AuthFacade().currentUser(storedToken);
+              id = profile.id;
+              subId = profile.userSubscriptions.subscriptionId;
+              await AsyncStorage.multiSet([
+                [USER_ID_KEY, String(id)],
+                [SUBSCRIPTION_ID_KEY, String(subId)],
+                [PROFILE_KEY, JSON.stringify(profile)],
+              ]);
+            } catch {
+              if (storedUserId && id === null) {
                 id = parseInt(storedUserId, 10);
               }
-              if (storedSubscriptionId) {
+              if (storedSubscriptionId && subId === null) {
                 subId = parseInt(storedSubscriptionId, 10);
               }
+              if (!profile && storedProfile) {
+                try {
+                  profile = JSON.parse(storedProfile) as User;
+                } catch {
+                  profile = null;
+                }
+              }
+              if (profile && id === null)
+                id = profile.id;
+              if (profile && subId === null)
+                subId = profile.userSubscriptions.subscriptionId;
               if (id === null || subId === null) {
                 await AsyncStorage.multiRemove([
                   TOKEN_KEY,
                   EMAIL_KEY,
                   USER_ID_KEY,
                   SUBSCRIPTION_ID_KEY,
+                  PROFILE_KEY,
                 ]);
                 return;
               }
@@ -98,10 +120,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setToken(storedToken);
           setUserId(id);
           setSubscriptionId(subId);
+          setProfile(profile);
         } else {
-          if (storedUserId) setUserId(parseInt(storedUserId, 10));
-          if (storedSubscriptionId)
-            setSubscriptionId(parseInt(storedSubscriptionId, 10));
+          if (storedProfile) {
+            try {
+              const parsed = JSON.parse(storedProfile) as User;
+              setProfile(parsed);
+              setUserId(parsed.id);
+              setSubscriptionId(parsed.userSubscriptions.subscriptionId);
+            } catch {
+              if (storedUserId) setUserId(parseInt(storedUserId, 10));
+              if (storedSubscriptionId)
+                setSubscriptionId(parseInt(storedSubscriptionId, 10));
+            }
+          } else {
+            if (storedUserId) setUserId(parseInt(storedUserId, 10));
+            if (storedSubscriptionId)
+              setSubscriptionId(parseInt(storedSubscriptionId, 10));
+          }
         }
 
         if (storedEmail) {
@@ -121,6 +157,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setEmail(newEmail);
       setUserId(profile.id);
       setSubscriptionId(profile.userSubscriptions.subscriptionId);
+      setProfile(profile);
       await AsyncStorage.multiSet([
         [TOKEN_KEY, newToken],
         [EMAIL_KEY, newEmail],
@@ -129,6 +166,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           SUBSCRIPTION_ID_KEY,
           String(profile.userSubscriptions.subscriptionId),
         ],
+        [PROFILE_KEY, JSON.stringify(profile)],
       ]);
     } catch {
       const decoded = decodeUserId(newToken);
@@ -140,6 +178,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setEmail(newEmail);
       setUserId(decoded);
       setSubscriptionId(subDecoded);
+      setProfile(null);
       try {
         await AsyncStorage.multiSet([
           [TOKEN_KEY, newToken],
@@ -158,12 +197,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setEmail(null);
     setUserId(null);
     setSubscriptionId(null);
+    setProfile(null);
     try {
       await AsyncStorage.multiRemove([
         TOKEN_KEY,
         EMAIL_KEY,
         USER_ID_KEY,
         SUBSCRIPTION_ID_KEY,
+        PROFILE_KEY,
       ]);
     } catch {
       // ignore storage errors
@@ -172,7 +213,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ token, email, userId, subscriptionId, signIn, signOut }}
+      value={{ token, email, userId, subscriptionId, profile, signIn, signOut }}
     >
       {children}
     </AuthContext.Provider>
