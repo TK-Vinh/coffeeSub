@@ -47,12 +47,7 @@ export default function CoffeeDetail() {
     const svc = new CoffeeItemService();
     try {
       const res = await svc.generateQrCode(userId, Number(id), token);
-      const payload = JSON.stringify({
-        subscriptionId: res.subscriptionId,
-        coffeeCode: res.coffeeCode,
-        userId: res.userId,
-      });
-      setQrValue(payload);
+      setQrValue(JSON.stringify(res));
       setQrVisible(true);
     } catch (e) {
       console.error(e);
