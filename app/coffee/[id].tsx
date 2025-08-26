@@ -17,7 +17,7 @@ export default function CoffeeDetail() {
   const [remaining, setRemaining] = useState<number | null>(null);
   const [qrValue, setQrValue] = useState<string | null>(null);
   const [qrVisible, setQrVisible] = useState(false);
-  const { token, userId } = useAuth();
+  const { token, subscriptionId } = useAuth();
   const secondary = useThemeColor({}, 'icon');
 
   useEffect(() => {
@@ -43,10 +43,10 @@ export default function CoffeeDetail() {
   }, [token]);
 
   const handleUseTicket = async () => {
-    if (!token || !userId || !id) return;
+    if (!token || !subscriptionId || !id) return;
     const svc = new CoffeeItemService();
     try {
-      const res = await svc.generateQrCode(userId, Number(id), token);
+      const res = await svc.generateQrCode(subscriptionId, Number(id), token);
       const payload = JSON.stringify({
         subscriptionId: res.subscriptionId,
         coffeeCode: res.coffeeCode,

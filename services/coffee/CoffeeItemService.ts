@@ -40,7 +40,7 @@ export class CoffeeItemService {
   }
 
   async generateQrCode(
-    userId: number,
+    subscriptionId: number,
     coffeeId: number,
     token: string,
   ): Promise<{ subscriptionId: number; coffeeCode: string; userId: number }> {
@@ -54,7 +54,7 @@ export class CoffeeItemService {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ userId, coffeeId }),
+      body: JSON.stringify({ subscriptionId, coffeeId }),
     });
 
     const json = await res.json().catch(() => null);
