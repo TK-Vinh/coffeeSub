@@ -1,4 +1,5 @@
 import { Plan } from '@/factories/PlanFactory';
+import { fetchWithErrorHandling } from '../api';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -8,7 +9,7 @@ export class PlanService {
       throw new Error('Missing API URL');
     }
 
-    const res = await fetch(`${API_URL}/SubscriptionPlan`);
+    const res = await fetchWithErrorHandling(`${API_URL}/SubscriptionPlan`);
     if (!res.ok) {
       throw new Error('Failed to fetch subscription plans');
     }
@@ -22,7 +23,7 @@ export class PlanService {
       throw new Error('Missing API URL');
     }
 
-    const res = await fetch(`${API_URL}/SubscriptionPlan/${id}`);
+    const res = await fetchWithErrorHandling(`${API_URL}/SubscriptionPlan/${id}`);
     if (!res.ok) {
       throw new Error('Failed to fetch subscription plan');
     }
@@ -36,7 +37,7 @@ export class PlanService {
       throw new Error('Missing API URL');
     }
 
-    const res = await fetch(
+    const res = await fetchWithErrorHandling(
       `${API_URL}/Vnpay/CreatePaymentUrl?planId=${planId}&userId=${userId}`,
     );
     if (!res.ok) {

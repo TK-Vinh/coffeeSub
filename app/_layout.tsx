@@ -8,6 +8,7 @@ import { AuthProvider } from '@/hooks/useAuth';
 import { ColorSchemeProvider, useColorScheme } from '@/hooks/useColorScheme';
 import { Provider as PaperProvider, MD3DarkTheme, MD3LightTheme } from 'react-native-paper';
 import { Colors } from '@/constants/Colors';
+import { ToastContainer } from 'toastify-react-native';
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -93,6 +94,7 @@ function RootNavigation() {
             <Stack.Screen name="+not-found" />
           </Stack>
           <StatusBar style="auto" />
+          <ToastContainer />
         </ThemeProvider>
       </PaperProvider>
     </AuthProvider>

@@ -4,6 +4,8 @@ export interface Category {
   description: string;
 }
 
+import { fetchWithErrorHandling } from '../api';
+
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export class CategoryService {
@@ -12,7 +14,7 @@ export class CategoryService {
       throw new Error('Missing API URL');
     }
 
-    const res = await fetch(`${API_URL}/Category`);
+    const res = await fetchWithErrorHandling(`${API_URL}/Category`);
     if (!res.ok) {
       throw new Error('Failed to fetch categories');
     }
