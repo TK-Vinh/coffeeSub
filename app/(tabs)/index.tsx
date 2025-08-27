@@ -1,12 +1,12 @@
+import { CoffeeItemCard } from '@/components/CoffeeItemCard';
+import { ThemedView } from '@/components/ThemedView';
+import { AuthFacade } from '@/facades/AuthFacade';
+import { useAuth } from '@/hooks/useAuth';
+import { CategoryService } from '@/services/coffee/CategoryService';
+import { CoffeeItem, CoffeeItemService } from '@/services/coffee/CoffeeItemService';
 import React, { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { ActivityIndicator, List, Text } from 'react-native-paper';
-import { ThemedView } from '@/components/ThemedView';
-import { CoffeeItemCard } from '@/components/CoffeeItemCard';
-import { CoffeeItem, CoffeeItemService } from '@/services/coffee/CoffeeItemService';
-import { CategoryService } from '@/services/coffee/CategoryService';
-import { AuthFacade } from '@/facades/AuthFacade';
-import { useAuth } from '@/hooks/useAuth';
 
 type Category = {
   title: string;

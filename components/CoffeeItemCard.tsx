@@ -1,8 +1,8 @@
+import type { CoffeeItem } from '@/services/coffee/CoffeeItemService';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { Card, Text, Button } from 'react-native-paper';
-import { useRouter } from 'expo-router';
-import type { CoffeeItem } from '@/services/coffee/CoffeeItemService';
+import { Button, Card, Text } from 'react-native-paper';
 
 interface Props {
   item: CoffeeItem;
