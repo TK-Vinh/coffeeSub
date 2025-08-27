@@ -16,7 +16,9 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "googleServicesFile": "./google-services.json",
+      "package": "com.genchio.coffeesub"
     },
     "web": {
       "bundler": "metro",
@@ -38,6 +40,12 @@
     "experiments": {
       "typedRoutes": true
     },
-    "owner": "genchio"
+    "owner": "genchio",
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "5936f9d0-4775-4fed-a2a0-b494c34a71bd"
+      }
+    }
   }
 }

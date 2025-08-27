@@ -4,9 +4,10 @@ import { useAuth } from '@/hooks/useAuth';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { makeRedirectUri } from 'expo-auth-session';
 import * as Google from 'expo-auth-session/providers/google';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { Button, Text, TextInput } from 'react-native-paper';
 
@@ -18,43 +19,70 @@ export default function SignIn() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const { signIn: setAuth } = useAuth();
+  const textColor = useThemeColor({}, 'text');
+
+  // ✅ Correct redirect handling
+  const redirectUri = useMemo(() => {
+    if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
+      // Expo Go (dev) → must use Web Client + Expo proxy redirect
+      return 'https://auth.expo.io/@genchio/coffeeSub';
+    }
+    // EAS builds (standalone) → use app scheme
+    return makeRedirectUri({ scheme: 'coffeesub' });
+  }, []);
 
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID ?? '',
-    redirectUri: makeRedirectUri({ scheme: 'coffeesub' }),
+    clientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,   // Web Client ID
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+    redirectUri,
   });
 
   useEffect(() => {
-    if (response?.type === 'success') {
-      const { id_token } = response.params;
-      if (id_token) {
-        setAuth(id_token, '');
-        Alert.alert('Success', 'Signed in successfully');
-        router.replace('/(tabs)');
+    (async () => {
+      if (response?.type === 'success') {
+        const { id_token: idToken } = response.params ?? {};
+        if (!idToken) {
+          Alert.alert('Google Sign-In', 'Missing idToken');
+          return;
+        }
+        try {
+          // Exchange Google idToken -> backend JWT
+          const { token } = await auth.googleLogin(idToken);
+          await setAuth(token, '');
+          router.replace('/(tabs)');
+        } catch (e) {
+          const message = e instanceof Error ? e.message : String(e);
+          Alert.alert('Google login failed', message);
+        }
       }
-    }
+    })();
   }, [response, router, setAuth]);
 
   const handleSignIn = async () => {
+    setLoading(true);
     try {
       const { token } = await auth.signIn({ email, password });
       await setAuth(token, email);
-      Alert.alert('Success', 'Signed in successfully');
       router.replace('/(tabs)');
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
       Alert.alert('Sign in failed', message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const textColor = useThemeColor({}, 'text');
   return (
     <ThemedView style={styles.container} useSafeArea>
       <TextInput
         label="Email"
         value={email}
         onChangeText={setEmail}
+        autoCapitalize="none"
+        keyboardType="email-address"
         mode="outlined"
         style={styles.input}
       />
@@ -66,19 +94,27 @@ export default function SignIn() {
         mode="outlined"
         style={styles.input}
       />
-      <Button mode="contained" onPress={handleSignIn} style={styles.button}>
+      <Button
+        mode="contained"
+        onPress={handleSignIn}
+        style={styles.button}
+        loading={loading}
+        disabled={loading}
+      >
         Sign In
       </Button>
       <Button
         mode="outlined"
         disabled={!request}
-        onPress={() => promptAsync({ useProxy: false })}
+        onPress={() => promptAsync()}
         style={styles.button}
       >
         Sign In with Google
       </Button>
       <View style={styles.separator}>
-        <Text style={[styles.separatorText, { color: textColor }]}>If you don&apos;t have an account</Text>
+        <Text style={[styles.separatorText, { color: textColor }]}>
+          If you don&apos;t have an account
+        </Text>
         <Button onPress={() => router.replace('/sign-up')}>Sign Up</Button>
       </View>
     </ThemedView>
