@@ -69,7 +69,6 @@ export class CoffeeItemService {
     if (!API_URL) {
       throw new Error('Missing API URL');
     }
-
     const res = await fetch(
       `${API_URL}/CoffeeItem/qrcode?userId=${userId}&coffeeId=${coffeeId}`,
       {
@@ -81,7 +80,10 @@ export class CoffeeItemService {
     );
 
     if (!res.ok) {
-      throw new Error('Failed to generate QR code');
+      const message = await res.text();
+      throw new Error(
+        `Failed to generate QR code: ${res.status} ${message} (userId: ${userId}, coffeeId: ${coffeeId})`,
+      );
     }
 
     const json = await res.json();
