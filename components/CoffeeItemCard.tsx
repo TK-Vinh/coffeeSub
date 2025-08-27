@@ -1,6 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { Card, Text, Button } from 'react-native-paper';
+import { View, Image, Text, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import type { CoffeeItem } from '@/services/coffee/CoffeeItemService';
 
@@ -13,53 +12,27 @@ export function CoffeeItemCard({ item }: Props) {
   const handlePress = () => router.push(`/coffee/${item.coffeeId}`);
 
   return (
-    <Card style={styles.card} onPress={handlePress}>
-      {item.imageUrl ? <Card.Cover source={{ uri: item.imageUrl }} style={styles.cover} /> : null}
-      <Card.Content>
-        <Text
-          variant="titleMedium"
-          style={styles.title}
-          numberOfLines={2}
-          ellipsizeMode="tail"
-        >
+    <Pressable
+      onPress={handlePress}
+      className="w-48 mr-4 mb-4 rounded-lg overflow-hidden bg-coffee-light"
+    >
+      {item.imageUrl ? (
+        <Image source={{ uri: item.imageUrl }} className="h-40 w-full" />
+      ) : null}
+      <View className="p-2">
+        <Text className="text-lg font-semibold text-coffee-dark" numberOfLines={2}>
           {item.coffeeName}
         </Text>
-        <Text
-          variant="bodyMedium"
-          numberOfLines={2}
-          ellipsizeMode="tail"
-          style={styles.description}
-        >
+        <Text className="text-sm text-coffee-dark/80" numberOfLines={2}>
           {item.description}
         </Text>
-      </Card.Content>
-      <Card.Actions>
-        <Button
-          icon="ticket-outline"
-          mode="contained"
-          compact
-          onPress={handlePress}
-        >
-          Use Ticket
-        </Button>
-      </Card.Actions>
-    </Card>
+      </View>
+      <View className="p-2">
+        <View className="rounded bg-coffee-dark py-1">
+          <Text className="text-center text-white">Use Ticket</Text>
+        </View>
+      </View>
+    </Pressable>
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    width: 200,
-    marginRight: 16,
-    marginBottom: 16,
-  },
-  cover: {
-    height: 160,
-  },
-  title: {
-    marginBottom: 4,
-  },
-  description: {
-    minHeight: 40,
-  },
-});
