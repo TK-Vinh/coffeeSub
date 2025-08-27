@@ -29,6 +29,8 @@ export interface User {
  * In a real application these methods would use `fetch` or another
  * networking library. Here we simply mock the behaviour.
  */
+import { fetchWithErrorHandling } from '../api';
+
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export class AuthService {
@@ -37,7 +39,7 @@ export class AuthService {
       throw new Error('Missing API URL');
     }
 
-    const res = await fetch(`${API_URL}/Auth/login`, {
+    const res = await fetchWithErrorHandling(`${API_URL}/Auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -65,7 +67,7 @@ export class AuthService {
       throw new Error('Missing API URL');
     }
 
-    const res = await fetch(`${API_URL}/Auth/google-login`, {
+    const res = await fetchWithErrorHandling(`${API_URL}/Auth/google-login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ idToken }),
@@ -88,7 +90,7 @@ export class AuthService {
       throw new Error('Missing API URL');
     }
 
-    const res = await fetch(`${API_URL}/Auth/current-logged-user`, {
+    const res = await fetchWithErrorHandling(`${API_URL}/Auth/current-logged-user`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 

@@ -8,6 +8,8 @@ export interface CoffeeItem {
   imageUrl?: string;
 }
 
+import { fetchWithErrorHandling } from '../api';
+
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export class CoffeeItemService {
@@ -16,7 +18,7 @@ export class CoffeeItemService {
       throw new Error('Missing API URL');
     }
 
-    const res = await fetch(`${API_URL}/CoffeeItem`);
+    const res = await fetchWithErrorHandling(`${API_URL}/CoffeeItem`);
     if (!res.ok) {
       throw new Error('Failed to fetch coffee items');
     }
@@ -30,7 +32,7 @@ export class CoffeeItemService {
       throw new Error('Missing API URL');
     }
 
-    const res = await fetch(`${API_URL}/CoffeeItem/search`, {
+    const res = await fetchWithErrorHandling(`${API_URL}/CoffeeItem/search`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -52,7 +54,7 @@ export class CoffeeItemService {
       throw new Error('Missing API URL');
     }
 
-    const res = await fetch(`${API_URL}/CoffeeItem/${id}`);
+    const res = await fetchWithErrorHandling(`${API_URL}/CoffeeItem/${id}`);
     if (!res.ok) {
       throw new Error('Failed to fetch coffee item');
     }
@@ -69,7 +71,7 @@ export class CoffeeItemService {
     if (!API_URL) {
       throw new Error('Missing API URL');
     }
-    const res = await fetch(
+    const res = await fetchWithErrorHandling(
       `${API_URL}/CoffeeItem/qrcode?userId=${userId}&coffeeId=${coffeeId}`,
       {
         method: 'POST',
