@@ -1,14 +1,14 @@
+import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet } from 'react-native';
-import { ActivityIndicator, Button, Text, Modal, Portal } from 'react-native-paper';
+import { ActivityIndicator, Button, Modal, Portal, Text } from 'react-native-paper';
 import QRCode from 'react-native-qrcode-svg';
-import { useLocalSearchParams } from 'expo-router';
 
 import { ThemedView } from '@/components/ThemedView';
-import { CoffeeItem, CoffeeItemService } from '@/services/coffee/CoffeeItemService';
 import { AuthFacade } from '@/facades/AuthFacade';
 import { useAuth } from '@/hooks/useAuth';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { CoffeeItem, CoffeeItemService } from '@/services/coffee/CoffeeItemService';
 
 export default function CoffeeDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -83,7 +83,6 @@ export default function CoffeeDetail() {
           {item.coffeeName}
         </Text>
         <Text style={styles.description}>{item.description}</Text>
-        <Text style={[styles.code, { color: secondary }]}>Code: {item.code}</Text>
         <Text style={styles.remaining}>Tickets left: {remaining ?? '—'}</Text>
         <Button
           mode="contained"

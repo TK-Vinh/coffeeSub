@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Chip, Searchbar, Text } from 'react-native-paper';
 
-import { ThemedView } from '@/components/ThemedView';
 import { CoffeeItemCard } from '@/components/CoffeeItemCard';
+import { ThemedView } from '@/components/ThemedView';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { CoffeeItem, CoffeeItemService } from '@/services/coffee/CoffeeItemService';
 
 const FILTERS = ['All', 'Coffee', 'Tea', 'Juice'];
@@ -13,6 +14,7 @@ export default function Search() {
   const [selected, setSelected] = useState('All');
   const [results, setResults] = useState<CoffeeItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const textColor = useThemeColor({}, 'text');
 
   const handleSearch = async () => {
     setLoading(true);
@@ -45,6 +47,8 @@ export default function Search() {
             style={styles.chip}
             selected={selected === f}
             onPress={() => setSelected(f)}
+            mode="outlined"
+            selectedColor={textColor}
           >
             {f}
           </Chip>
@@ -57,8 +61,13 @@ export default function Search() {
       ) : (
         <FlatList
           data={results}
+          numColumns={2}
           keyExtractor={(item) => item.coffeeId.toString()}
-          renderItem={({ item }) => <CoffeeItemCard item={item} />}
+          renderItem={({ item }) => (
+            <View style={styles.itemWrapper}>
+              <CoffeeItemCard item={item} />
+            </View>
+          )}
           ListEmptyComponent={
             <View style={styles.placeholder}>
               <Text>No results</Text>
@@ -73,9 +82,13 @@ export default function Search() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
-  search: { marginBottom: 12 },
-  filters: { flexDirection: 'row', marginBottom: 16 },
-  chip: { marginRight: 8 },
+  search: { marginBottom: 16, borderRadius: 25 },
+  filters: { flexDirection: 'row', marginBottom: 16, flexWrap: 'wrap' },
+  chip: { marginRight: 8, marginBottom: 8 },
   placeholder: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   results: { paddingBottom: 16 },
+  itemWrapper: {
+    width: '50%',
+    padding: 8,
+  },
 });
