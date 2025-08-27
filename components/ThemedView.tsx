@@ -7,10 +7,12 @@ export type ThemedViewProps = ViewProps & {
   lightColor?: string;
   darkColor?: string;
   useSafeArea?: boolean;
+  className?: string;
 };
 
 export function ThemedView({
   style,
+  className,
   lightColor,
   darkColor,
   useSafeArea = false,
@@ -20,5 +22,5 @@ export function ThemedView({
 
   const Component = useSafeArea ? SafeAreaView : View;
 
-  return <Component style={[{ backgroundColor }, style]} {...otherProps} />;
+  return <Component className={className} style={[{ backgroundColor }, style]} {...otherProps} />;
 }

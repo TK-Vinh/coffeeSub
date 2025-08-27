@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Image, ScrollView, StyleSheet } from 'react-native';
-import { ActivityIndicator, Button, Text, Modal, Portal } from 'react-native-paper';
-import QRCode from 'react-native-qrcode-svg';
-import { useLocalSearchParams } from 'expo-router';
+import { ActivityIndicator, Image, Pressable, ScrollView, Text } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { ThemedView } from '@/components/ThemedView';
 import { CoffeeItem, CoffeeItemService } from '@/services/coffee/CoffeeItemService';
@@ -15,10 +13,9 @@ export default function CoffeeDetail() {
   const [item, setItem] = useState<CoffeeItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [remaining, setRemaining] = useState<number | null>(null);
-  const [qrValue, setQrValue] = useState<string | null>(null);
-  const [qrVisible, setQrVisible] = useState(false);
   const { token, userId } = useAuth();
   const secondary = useThemeColor({}, 'icon');
+  const router = useRouter();
 
   useEffect(() => {
     if (!id) return;
@@ -47,13 +44,14 @@ export default function CoffeeDetail() {
     const svc = new CoffeeItemService();
     try {
       const res = await svc.generateQrCode(userId, Number(id), token);
-      const payload = JSON.stringify({
-        subscriptionId: res.subscriptionId,
-        coffeeCode: res.coffeeCode,
-        userId: res.userId,
+      router.push({
+        pathname: '/ticket',
+        params: {
+          subscriptionId: String(res.subscriptionId),
+          coffeeCode: res.coffeeCode,
+          userId: String(res.userId),
+        },
       });
-      setQrValue(payload);
-      setQrVisible(true);
     } catch (e) {
       console.error(e);
     }
@@ -61,7 +59,7 @@ export default function CoffeeDetail() {
 
   if (loading) {
     return (
-      <ThemedView style={styles.center} useSafeArea>
+      <ThemedView className="flex-1 items-center justify-center bg-coffee-light" useSafeArea>
         <ActivityIndicator />
       </ThemedView>
     );
@@ -69,61 +67,35 @@ export default function CoffeeDetail() {
 
   if (!item) {
     return (
-      <ThemedView style={styles.center} useSafeArea>
+      <ThemedView className="flex-1 items-center justify-center bg-coffee-light" useSafeArea>
         <Text>No coffee found</Text>
       </ThemedView>
     );
   }
 
   return (
-    <ThemedView style={{ flex: 1 }} useSafeArea>
-      <ScrollView contentContainerStyle={styles.container}>
-        {item.imageUrl ? <Image source={{ uri: item.imageUrl }} style={styles.image} /> : null}
-        <Text variant="headlineSmall" style={styles.title}>
-          {item.coffeeName}
+    <ThemedView className="flex-1 bg-coffee-light" useSafeArea>
+      <ScrollView className="flex-1" contentContainerClassName="p-4">
+        {item.imageUrl ? (
+          <Image source={{ uri: item.imageUrl }} className="mb-4 h-52 w-full rounded" />
+        ) : null}
+        <Text className="mb-2 text-2xl font-bold text-coffee-dark">{item.coffeeName}</Text>
+        <Text className="mb-2 text-coffee-dark/80">{item.description}</Text>
+        <Text className="mb-4" style={{ color: secondary }}>
+          Code: {item.code}
         </Text>
-        <Text style={styles.description}>{item.description}</Text>
-        <Text style={[styles.code, { color: secondary }]}>Code: {item.code}</Text>
-        <Text style={styles.remaining}>Tickets left: {remaining ?? '—'}</Text>
-        <Button
-          mode="contained"
-          icon="ticket-outline"
-          style={styles.button}
+        <Text className="mb-4 font-semibold text-coffee-dark">
+          Tickets left: {remaining ?? '—'}
+        </Text>
+        <Pressable
+          className="rounded bg-coffee-dark py-3"
           onPress={handleUseTicket}
         >
-          Use Ticket
-        </Button>
+          <Text className="text-center font-semibold text-white">Use Ticket</Text>
+        </Pressable>
       </ScrollView>
-      <Portal>
-        <Modal
-          visible={qrVisible}
-          onDismiss={() => setQrVisible(false)}
-          contentContainerStyle={styles.modal}
-        >
-          {qrValue ? <QRCode value={qrValue} size={200} /> : null}
-          <Button onPress={() => setQrVisible(false)} style={styles.closeButton}>
-            Close
-          </Button>
-        </Modal>
-      </Portal>
     </ThemedView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { padding: 16 },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  image: { width: '100%', height: 200, marginBottom: 16 },
-  title: { marginBottom: 8 },
-  description: { marginBottom: 8 },
-  code: { marginBottom: 16 },
-  remaining: { marginBottom: 8, fontWeight: 'bold' },
-  button: { marginTop: 8 },
-  modal: {
-    backgroundColor: 'white',
-    padding: 24,
-    alignItems: 'center',
-  },
-  closeButton: { marginTop: 16 },
-});
 

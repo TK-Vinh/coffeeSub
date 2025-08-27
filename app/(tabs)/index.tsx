@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
-import { ActivityIndicator, List, Text } from 'react-native-paper';
+import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { CoffeeItemCard } from '@/components/CoffeeItemCard';
 import { CoffeeItem, CoffeeItemService } from '@/services/coffee/CoffeeItemService';
 import { CategoryService } from '@/services/coffee/CategoryService';
 import { AuthFacade } from '@/facades/AuthFacade';
 import { useAuth } from '@/hooks/useAuth';
-
 type Category = {
   title: string;
   data: CoffeeItem[];
@@ -50,22 +48,24 @@ export default function Home() {
 
   if (loading) {
     return (
-      <ThemedView style={styles.center} useSafeArea>
+      <ThemedView className="flex-1 items-center justify-center bg-coffee-light" useSafeArea>
         <ActivityIndicator />
       </ThemedView>
     );
   }
 
   return (
-    <ThemedView style={styles.screen} useSafeArea>
-      <Text style={styles.remaining}>Remaining Tickets: {remaining ?? '—'}</Text>
+    <ThemedView className="flex-1 bg-coffee-light" useSafeArea>
+      <Text className="mx-4 mb-4 font-bold text-coffee-dark">
+        Remaining Tickets: {remaining ?? '—'}
+      </Text>
       <FlatList
-        contentContainerStyle={styles.list}
+        contentContainerClassName="px-4 pb-4"
         data={categories}
         keyExtractor={(item) => item.title}
         renderItem={({ item }) => (
-          <View style={styles.category}>
-            <List.Subheader style={styles.sectionTitle}>{item.title}</List.Subheader>
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-semibold text-coffee-dark">{item.title}</Text>
             <FlatList
               data={item.data}
               horizontal
@@ -80,11 +80,3 @@ export default function Home() {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1 },
-  list: { paddingHorizontal: 16, paddingBottom: 16 },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  remaining: { marginHorizontal: 16, marginBottom: 16, fontWeight: 'bold' },
-  sectionTitle: { marginBottom: 8 },
-  category: { marginBottom: 24 },
-});

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, StyleSheet } from 'react-native';
-import { Card, Text } from 'react-native-paper';
+import { FlatList, Pressable, Text } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { useRouter } from 'expo-router';
 
@@ -18,28 +17,23 @@ export default function Subscriptions() {
   }, []);
 
   return (
-    <ThemedView style={styles.screen} useSafeArea>
+    <ThemedView className="flex-1 bg-coffee-light" useSafeArea>
       <FlatList
-        contentContainerStyle={styles.container}
+        contentContainerClassName="p-4"
         data={plans}
         keyExtractor={(item) => item.planId.toString()}
         renderItem={({ item }) => (
-          <Card style={styles.card} onPress={() => router.push(`/plan/${item.planId}`)}>
-            <Card.Title title={item.planName} />
-            <Card.Content>
-              <Text>{item.description}</Text>
-              <Text style={styles.price}>{`${item.price}₫`}</Text>
-            </Card.Content>
-          </Card>
+          <Pressable
+            className="mb-3 rounded-lg bg-white p-4"
+            onPress={() => router.push(`/plan/${item.planId}`)}
+          >
+            <Text className="text-lg font-semibold text-coffee-dark">{item.planName}</Text>
+            <Text className="text-coffee-dark/80">{item.description}</Text>
+            <Text className="mt-2 font-bold text-coffee-dark">{`${item.price}₫`}</Text>
+          </Pressable>
         )}
       />
     </ThemedView>
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1 },
-  container: { padding: 16 },
-  card: { marginBottom: 12 },
-  price: { marginTop: 8, fontWeight: 'bold' },
-});

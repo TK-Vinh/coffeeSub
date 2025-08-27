@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { ActivityIndicator, Chip, Searchbar, Text } from 'react-native-paper';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -29,20 +29,20 @@ export default function Search() {
   };
 
   return (
-    <ThemedView style={styles.container} useSafeArea>
+    <ThemedView className="flex-1 bg-coffee-light p-4" useSafeArea>
       <Searchbar
         placeholder="Search drinks"
         value={query}
         onChangeText={setQuery}
         onSubmitEditing={handleSearch}
         onIconPress={handleSearch}
-        style={styles.search}
+        className="mb-3"
       />
-      <View style={styles.filters}>
+      <View className="flex-row mb-4">
         {FILTERS.map((f) => (
           <Chip
             key={f}
-            style={styles.chip}
+            className="mr-2"
             selected={selected === f}
             onPress={() => setSelected(f)}
           >
@@ -51,7 +51,7 @@ export default function Search() {
         ))}
       </View>
       {loading ? (
-        <View style={styles.placeholder}>
+        <View className="flex-1 items-center justify-center">
           <ActivityIndicator />
         </View>
       ) : (
@@ -60,22 +60,14 @@ export default function Search() {
           keyExtractor={(item) => item.coffeeId.toString()}
           renderItem={({ item }) => <CoffeeItemCard item={item} />}
           ListEmptyComponent={
-            <View style={styles.placeholder}>
+            <View className="flex-1 items-center justify-center">
               <Text>No results</Text>
             </View>
           }
-          contentContainerStyle={results.length ? styles.results : undefined}
+          contentContainerClassName={results.length ? 'pb-4' : 'flex-1'}
         />
       )}
     </ThemedView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  search: { marginBottom: 12 },
-  filters: { flexDirection: 'row', marginBottom: 16 },
-  chip: { marginRight: 8 },
-  placeholder: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  results: { paddingBottom: 16 },
-});
